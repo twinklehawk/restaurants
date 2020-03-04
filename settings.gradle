@@ -1,4 +1,0 @@
-rootProject.name = 'takeout-containers'
-
-include 'platform'
-include 'takeout-containers-service'
