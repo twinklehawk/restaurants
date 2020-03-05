@@ -4,7 +4,6 @@ plugins {
     groovy
     jacoco
     id("org.springframework.boot")
-    id("io.freefair.lombok")
     kotlin("jvm")
     kotlin("plugin.spring")
 }
