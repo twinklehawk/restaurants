@@ -28,7 +28,6 @@ dependencies {
 }
 
 java { sourceCompatibility = JavaVersion.VERSION_1_8 }
-tasks.generateLombokConfig { enabled = false }
 tasks.withType<KotlinCompile> {
     kotlinOptions {
         freeCompilerArgs = listOf("-Xjsr305=strict")
