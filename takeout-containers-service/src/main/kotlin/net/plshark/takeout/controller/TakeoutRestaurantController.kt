@@ -14,7 +14,7 @@ class TakeoutRestaurantController(private val repository: TakeoutRestaurantRepos
 
     @PostMapping
     fun create(@RequestBody restaurant: TakeoutRestaurant): Mono<TakeoutRestaurant> {
-        return repository.insert(restaurant.copy(createTime = OffsetDateTime.now()))
+        return repository.insert(restaurant.copy(id = null, createTime = OffsetDateTime.now()))
     }
 
     @GetMapping("/{id}")
@@ -23,6 +23,7 @@ class TakeoutRestaurantController(private val repository: TakeoutRestaurantRepos
                 .switchIfEmpty(Mono.error { NotFoundException("No restaurant found for ID $id") })
     }
 
+    // TODO redo paged
     @GetMapping
     fun findAll(@RequestParam(name = "limit", defaultValue = "50") limit: Int,
                 @RequestParam(name = "page", defaultValue = "0") page: Int): Flux<TakeoutRestaurant> {
@@ -33,15 +34,16 @@ class TakeoutRestaurantController(private val repository: TakeoutRestaurantRepos
     fun update(@PathVariable("id") id: Long, @RequestBody restaurant: TakeoutRestaurant): Mono<TakeoutRestaurant>? {
         val updated = restaurant.copy(id = id)
         return repository.update(updated)
-                .filter { i -> i != 0 }
+                .filter { i -> i == 0 }
                 .flatMap { Mono.error<Any> { NotFoundException("No restaurant found for ID $id") } }
+                // TODO this may not return the values actually in the DB for columns that can't be updated
                 .then(Mono.just(updated))
     }
 
     @DeleteMapping("/{id}")
     fun delete(@PathVariable("id") id: Long): Mono<Void> {
         return repository.delete(id)
-                .filter { i -> i != 0 }
+                .filter { i -> i == 0 }
                 .flatMap { Mono.error<Any> { NotFoundException("No restaurant found for ID $id") } }
                 .then()
     }
