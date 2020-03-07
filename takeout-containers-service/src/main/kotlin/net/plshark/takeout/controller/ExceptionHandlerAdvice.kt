@@ -8,6 +8,9 @@ import org.springframework.http.server.reactive.ServerHttpRequest
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
 
+/**
+ * Handler for custom exception mapping
+ */
 @RestControllerAdvice
 class ExceptionHandlerAdvice {
 

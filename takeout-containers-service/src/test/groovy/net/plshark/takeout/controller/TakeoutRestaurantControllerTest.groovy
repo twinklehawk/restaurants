@@ -8,7 +8,7 @@ import reactor.core.publisher.Mono
 import reactor.test.StepVerifier
 import spock.lang.Specification
 
-class TakeoutRestaurantControllerSpec extends Specification {
+class TakeoutRestaurantControllerTest extends Specification {
 
     def repo = Mock(TakeoutRestaurantRepository)
     def controller = new TakeoutRestaurantController(repo)
