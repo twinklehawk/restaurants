@@ -1,8 +1,8 @@
-package net.plshark.takeout.controller
+package net.plshark.restaurant.controller
 
-import net.plshark.takeout.exception.NotFoundException
-import net.plshark.takeout.model.TakeoutRestaurant
-import net.plshark.takeout.repository.TakeoutRestaurantRepository
+import net.plshark.restaurant.exception.NotFoundException
+import net.plshark.restaurant.model.Restaurant
+import net.plshark.restaurant.repository.RestaurantsRepository
 import org.springframework.web.bind.annotation.*
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
@@ -10,15 +10,15 @@ import java.time.OffsetDateTime
 
 @RestController
 @RequestMapping("/restaurants")
-class TakeoutRestaurantController(private val repository: TakeoutRestaurantRepository) {
+class RestaurantsController(private val repository: RestaurantsRepository) {
 
     @PostMapping
-    fun create(@RequestBody restaurant: TakeoutRestaurant): Mono<TakeoutRestaurant> {
+    fun create(@RequestBody restaurant: Restaurant): Mono<Restaurant> {
         return repository.insert(restaurant.copy(id = null, createTime = OffsetDateTime.now()))
     }
 
     @GetMapping("/{id}")
-    fun findById(@PathVariable("id") id: Long): Mono<TakeoutRestaurant> {
+    fun findById(@PathVariable("id") id: Long): Mono<Restaurant> {
         return repository.findById(id)
                 .switchIfEmpty(Mono.error { NotFoundException("No restaurant found for ID $id") })
     }
@@ -26,12 +26,12 @@ class TakeoutRestaurantController(private val repository: TakeoutRestaurantRepos
     // TODO redo paged
     @GetMapping
     fun findAll(@RequestParam(name = "limit", defaultValue = "50") limit: Int,
-                @RequestParam(name = "page", defaultValue = "0") page: Int): Flux<TakeoutRestaurant> {
+                @RequestParam(name = "page", defaultValue = "0") page: Int): Flux<Restaurant> {
         return repository.findAll(limit, page)
     }
 
     @PutMapping("/{id}")
-    fun update(@PathVariable("id") id: Long, @RequestBody restaurant: TakeoutRestaurant): Mono<TakeoutRestaurant>? {
+    fun update(@PathVariable("id") id: Long, @RequestBody restaurant: Restaurant): Mono<Restaurant>? {
         val updated = restaurant.copy(id = id)
         return repository.update(updated)
                 .filter { i -> i == 0 }

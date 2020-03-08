@@ -1,7 +1,7 @@
-package net.plshark.takeout.controller
+package net.plshark.restaurant.controller
 
 import net.plshark.errors.ErrorResponse
-import net.plshark.takeout.exception.HttpServerException
+import net.plshark.restaurant.exception.HttpServerException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.http.server.reactive.ServerHttpRequest

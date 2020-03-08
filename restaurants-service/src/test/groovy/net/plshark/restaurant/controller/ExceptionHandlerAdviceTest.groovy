@@ -1,7 +1,7 @@
-package net.plshark.takeout.controller
+package net.plshark.restaurant.controller
 
-import net.plshark.takeout.exception.HttpServerException
-import net.plshark.takeout.exception.NotFoundException
+import net.plshark.restaurant.exception.HttpServerException
+import net.plshark.restaurant.exception.NotFoundException
 import org.springframework.http.HttpStatus
 import org.springframework.http.server.reactive.ServerHttpRequest
 import spock.lang.Specification

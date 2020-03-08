@@ -1,4 +1,4 @@
-package net.plshark.takeout
+package net.plshark.restaurant
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
