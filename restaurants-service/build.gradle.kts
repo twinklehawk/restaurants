@@ -34,6 +34,14 @@ tasks.withType<KotlinCompile> {
         jvmTarget = "1.8"
     }
 }
+tasks.withType<Test> {
+    val props = mutableMapOf<String, String>()
+    if (System.getProperties().getProperty("runIntTests") != null)
+        props["runIntTests"] = ""
+    options {
+        systemProperties(props)
+    }
+}
 tasks.jacocoTestReport {
     reports {
         xml.isEnabled = true
