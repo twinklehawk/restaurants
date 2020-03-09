@@ -20,3 +20,11 @@ CREATE TABLE restaurant
 GRANT USAGE ON restaurant_id_seq TO ${username};
 CREATE INDEX restaurant_name_idx ON restaurant (name);
 GRANT SELECT, INSERT, UPDATE, DELETE ON restaurant TO ${username};
+
+CREATE TABLE takeout_container
+(
+    id   BIGSERIAL PRIMARY KEY,
+    name VARCHAR(256) NOT NULL
+);
+GRANT USAGE ON takeout_container_id_seq TO ${username};
+GRANT SELECT, INSERT, UPDATE, DELETE ON takeout_container TO ${username};
