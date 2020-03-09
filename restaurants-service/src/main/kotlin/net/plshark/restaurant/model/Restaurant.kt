@@ -1,6 +1,8 @@
 package net.plshark.restaurant.model
 
-import org.springframework.data.annotation.Id
 import java.time.OffsetDateTime
 
-data class Restaurant(@Id val id: Long?, val name: String, val containerType: String, val createTime: OffsetDateTime?)
+data class Restaurant(val id: Long?, val name: String, val containerType: String, val createTime: OffsetDateTime?) {
+    constructor(name: String, containerType: String) : this(null, name, containerType, null)
+    constructor(name: String, containerType: String, createTime: OffsetDateTime?) : this(null, name, containerType, createTime)
+}
