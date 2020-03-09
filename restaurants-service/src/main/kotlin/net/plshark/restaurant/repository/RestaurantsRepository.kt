@@ -26,7 +26,7 @@ class RestaurantsRepository(private val client: DatabaseClient) {
         return client.insert()
                 .into(Restaurant::class.java)
                 .using(restaurant)
-                .map { row: Row -> row.get("id", Long::class.java) }
+                .map { row: Row -> row.get("id", java.lang.Long::class.java)!!.toLong() }
                 .one()
                 .switchIfEmpty(Mono.error { IllegalStateException("No ID returned from insert") })
                 .map { id -> restaurant.copy(id = id) }
@@ -68,19 +68,20 @@ class RestaurantsRepository(private val client: DatabaseClient) {
 
     /**
      * Update an existing restaurant by its ID
+     *
      * Only the container type and name can be updated
      * @param restaurant the restaurant to update with the new data to set, the ID must not be null
      * @return the number of rows updated, never empty
      */
     fun update(restaurant: Restaurant): Mono<Int> {
-        if (restaurant.id == null) throw NullPointerException("Restaurant ID cannot be null when updating")
+        val id = restaurant.id ?: throw NullPointerException("Restaurant ID cannot be null when updating")
         return client.update()
-                .table("takeout_restaurant")
+                .table("restaurant")
                 .using(Update.update("container_type", restaurant.containerType)
                         .set("name", restaurant.name))
-                .matching(Criteria.where("id").`is`(restaurant.id))
+                .matching(Criteria.where("id").`is`(id))
                 .fetch().rowsUpdated()
-                .flatMap { i -> if (i > 1) Mono.error { IllegalStateException("Unexpected number of rows updated: $i") } else Mono.just(i) }
+                .flatMap { i -> if (i > 1) Mono.error { IllegalStateException("Unexpected number of restaurant rows updated: $i") } else Mono.just(i) }
     }
 
     /**
@@ -92,6 +93,15 @@ class RestaurantsRepository(private val client: DatabaseClient) {
         return client.delete()
                 .from(Restaurant::class.java)
                 .matching(Criteria.where("id").`is`(id))
+                .fetch().rowsUpdated()
+    }
+
+    /**
+     * Delete all restaurants
+     */
+    fun deleteAll(): Mono<Int> {
+        return client.delete()
+                .from(Restaurant::class.java)
                 .fetch().rowsUpdated()
     }
 }
