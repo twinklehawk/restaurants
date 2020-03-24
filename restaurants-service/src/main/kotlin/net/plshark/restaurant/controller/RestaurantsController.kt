@@ -31,7 +31,7 @@ class RestaurantsController(private val repository: RestaurantsRepository) {
     }
 
     @PutMapping("/{id}")
-    fun update(@PathVariable("id") id: Long, @RequestBody restaurant: Restaurant): Mono<Restaurant>? {
+    fun update(@PathVariable("id") id: Long, @RequestBody restaurant: Restaurant): Mono<Restaurant> {
         val updated = restaurant.copy(id = id)
         return repository.update(updated)
                 .filter { i -> i == 0 }

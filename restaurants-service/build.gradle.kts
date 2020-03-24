@@ -1,7 +1,6 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    groovy
     jacoco
     id("org.springframework.boot")
     kotlin("jvm")
@@ -14,17 +13,16 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-webflux")
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot.experimental:spring-boot-starter-data-r2dbc")
-    implementation("io.r2dbc:r2dbc-postgresql")
+    runtimeOnly("io.r2dbc:r2dbc-postgresql")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+    implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
+    testImplementation("org.junit.jupiter:junit-jupiter-api")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
+    testImplementation("io.mockk:mockk:1.9.3")
     testImplementation("io.projectreactor:reactor-test")
-    testImplementation("org.codehaus.groovy:groovy-all")
-    testImplementation("org.spockframework:spock-core")
-    testImplementation("org.hamcrest:hamcrest-core")
-    testRuntimeOnly("net.bytebuddy:byte-buddy")
-    testRuntimeOnly("org.objenesis:objenesis")
 }
 
 java { sourceCompatibility = JavaVersion.VERSION_1_8 }
@@ -35,9 +33,11 @@ tasks.withType<KotlinCompile> {
     }
 }
 tasks.withType<Test> {
+    useJUnitPlatform()
+
     val props = mutableMapOf<String, String>()
-    if (System.getProperties().getProperty("runIntTests") != null)
-        props["runIntTests"] = ""
+    if (System.getProperties().getProperty("runIntTests") == "true")
+        props["runIntTests"] = "true"
     options {
         systemProperties(props)
     }
