@@ -1,5 +1,6 @@
 package net.plshark.restaurant.controller
 
+import net.plshark.restaurant.CreateRestaurant
 import net.plshark.restaurant.exception.NotFoundException
 import net.plshark.restaurant.Restaurant
 import net.plshark.restaurant.RestaurantsService
@@ -7,15 +8,14 @@ import net.plshark.restaurant.repository.RestaurantsRepository
 import org.springframework.web.bind.annotation.*
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
-import java.time.OffsetDateTime
 
 @RestController
 @RequestMapping("/restaurants")
 class RestaurantsController(private val repository: RestaurantsRepository) : RestaurantsService {
 
     @PostMapping
-    override fun create(@RequestBody restaurant: Restaurant): Mono<Restaurant> {
-        return repository.insert(restaurant.copy(id = null, createTime = OffsetDateTime.now()))
+    override fun create(@RequestBody restaurant: CreateRestaurant): Mono<Restaurant> {
+        return repository.insert(restaurant)
     }
 
     @GetMapping("/{id}")
@@ -24,7 +24,7 @@ class RestaurantsController(private val repository: RestaurantsRepository) : Res
                 .switchIfEmpty(Mono.error { NotFoundException("No restaurant found for ID $id") })
     }
 
-    // TODO redo paged
+    // TODO redo pagination
     @GetMapping
     fun findAll(@RequestParam(name = "limit", defaultValue = "50") limit: Int,
                 @RequestParam(name = "page", defaultValue = "0") page: Int): Flux<Restaurant> {

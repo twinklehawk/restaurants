@@ -1,5 +1,3 @@
 package net.plshark.restaurant
 
-data class TakeoutContainer(val id: Long?, val name: String) {
-    constructor(name: String) : this(null, name)
-}
+data class TakeoutContainer(val id: Long, val name: String)

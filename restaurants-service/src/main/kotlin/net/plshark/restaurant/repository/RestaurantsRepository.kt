@@ -1,6 +1,7 @@
 package net.plshark.restaurant.repository
 
 import io.r2dbc.spi.Row
+import net.plshark.restaurant.CreateRestaurant
 import net.plshark.restaurant.Restaurant
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
@@ -10,6 +11,13 @@ import org.springframework.data.r2dbc.query.Update
 import org.springframework.stereotype.Repository
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
+import java.time.OffsetDateTime
+
+private const val TABLE = "restaurants"
+private const val ID = "id"
+private const val NAME = "name"
+private const val CONTAINER_TYPE = "container_type"
+private const val CREATE_TIME = "create_time"
 
 /**
  * Repository for storing and retrieving restaurants
@@ -22,22 +30,23 @@ class RestaurantsRepository(private val client: DatabaseClient) {
      * @param restaurant the data to save
      * @return the saved data, never empty
      */
-    fun insert(restaurant: Restaurant): Mono<Restaurant> {
+    fun insert(restaurant: CreateRestaurant): Mono<Restaurant> {
         return client.insert()
-                .into(Restaurant::class.java)
-                .using(restaurant)
-                .map { row: Row -> row.get("id", java.lang.Long::class.java)!!.toLong() }
-                .one()
-                .switchIfEmpty(Mono.error { IllegalStateException("No ID returned from insert") })
-                .map { id -> restaurant.copy(id = id) }
+            .into(TABLE)
+            .value(NAME, restaurant.name)
+            .value(CONTAINER_TYPE, restaurant.containerType)
+            .map { row: Row -> row.get(ID, java.lang.Long::class.java)!!.toLong() }
+            .one()
+            .switchIfEmpty(Mono.error { IllegalStateException("No ID returned from insert") })
+            .map { id -> Restaurant(id, restaurant.name, restaurant.containerType, OffsetDateTime.now()) }
     }
 
     fun findAll(limit: Int, page: Int): Flux<Restaurant> {
         return client.select()
-                .from(Restaurant::class.java)
-                .page(PageRequest.of(page, limit, Sort.by(Sort.Order.asc("id"))))
-                .fetch()
-                .all()
+            .from(TABLE)
+            .page(PageRequest.of(page, limit, Sort.by(Sort.Order.asc(ID))))
+            .map(this::mapRow)
+            .all()
     }
 
     /**
@@ -47,10 +56,10 @@ class RestaurantsRepository(private val client: DatabaseClient) {
      */
     fun findById(id: Long): Mono<Restaurant> {
         return client.select()
-                .from(Restaurant::class.java)
-                .matching(Criteria.where("id").`is`(id))
-                .fetch()
-                .one()
+            .from(TABLE)
+            .matching(Criteria.where(ID).`is`(id))
+            .map(this::mapRow)
+            .one()
     }
 
     /**
@@ -60,10 +69,10 @@ class RestaurantsRepository(private val client: DatabaseClient) {
      */
     fun findByName(name: String): Flux<Restaurant> {
         return client.select()
-                .from(Restaurant::class.java)
-                .matching(Criteria.where("name").`is`(name))
-                .fetch()
-                .all()
+            .from(TABLE)
+            .matching(Criteria.where(NAME).`is`(name))
+            .map(this::mapRow)
+            .all()
     }
 
     /**
@@ -74,14 +83,17 @@ class RestaurantsRepository(private val client: DatabaseClient) {
      * @return the number of rows updated, never empty
      */
     fun update(restaurant: Restaurant): Mono<Int> {
-        val id = restaurant.id ?: throw NullPointerException("Restaurant ID cannot be null when updating")
         return client.update()
-                .table("restaurant")
-                .using(Update.update("container_type", restaurant.containerType)
-                        .set("name", restaurant.name))
-                .matching(Criteria.where("id").`is`(id))
-                .fetch().rowsUpdated()
-                .flatMap { i -> if (i > 1) Mono.error { IllegalStateException("Unexpected number of restaurant rows updated: $i") } else Mono.just(i) }
+            .table(TABLE)
+            .using(Update.update(CONTAINER_TYPE, restaurant.containerType).set(NAME, restaurant.name))
+            .matching(Criteria.where(ID).`is`(restaurant.id))
+            .fetch().rowsUpdated()
+            .flatMap { i ->
+                if (i > 1)
+                    Mono.error { IllegalStateException("Unexpected number of restaurant rows updated: $i") }
+                else
+                    Mono.just(i)
+            }
     }
 
     /**
@@ -91,9 +103,9 @@ class RestaurantsRepository(private val client: DatabaseClient) {
      */
     fun delete(id: Long): Mono<Int> {
         return client.delete()
-                .from(Restaurant::class.java)
-                .matching(Criteria.where("id").`is`(id))
-                .fetch().rowsUpdated()
+            .from(TABLE)
+            .matching(Criteria.where(ID).`is`(id))
+            .fetch().rowsUpdated()
     }
 
     /**
@@ -101,7 +113,16 @@ class RestaurantsRepository(private val client: DatabaseClient) {
      */
     fun deleteAll(): Mono<Int> {
         return client.delete()
-                .from(Restaurant::class.java)
-                .fetch().rowsUpdated()
+            .from(Restaurant::class.java)
+            .fetch().rowsUpdated()
+    }
+
+    private fun mapRow(r: Row): Restaurant {
+        return Restaurant(
+            r.get(ID, Long::class.java)!!,
+            r.get(NAME, String::class.java)!!,
+            r.get(CONTAINER_TYPE, String::class.java)!!,
+            r.get(CREATE_TIME, OffsetDateTime::class.java)!!
+        )
     }
 }

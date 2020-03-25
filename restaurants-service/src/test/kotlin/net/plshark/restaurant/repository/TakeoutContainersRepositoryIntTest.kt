@@ -1,10 +1,9 @@
 package net.plshark.restaurant.repository
 
 import io.r2dbc.spi.ConnectionFactories
-import net.plshark.restaurant.TakeoutContainer
+import net.plshark.restaurant.CreateTakeoutContainer
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.condition.EnabledIfSystemProperty
@@ -29,18 +28,17 @@ class TakeoutContainersRepositoryIntTest {
 
     @Test
     fun `insert should return the inserted object with the generated ID set`() {
-        val container = TakeoutContainer("paper")
+        val container = CreateTakeoutContainer("paper")
         val inserted = repo.insert(container).block()!!
 
-        assertNotNull(inserted.id)
         assertEquals(container.name, inserted.name)
     }
 
     @Test
     fun `delete should remove a previously inserted record`() {
-        val restaurant = repo.insert(TakeoutContainer("bears")).block()!!
+        val restaurant = repo.insert(CreateTakeoutContainer("bears")).block()!!
 
-        StepVerifier.create(repo.delete(restaurant.id!!))
+        StepVerifier.create(repo.delete(restaurant.id))
                 .expectNext(1).verifyComplete()
         StepVerifier.create(repo.findAll())
                 .verifyComplete()
@@ -54,8 +52,8 @@ class TakeoutContainersRepositoryIntTest {
 
     @Test
     fun `deleteAll should remove everything in the table`() {
-        repo.insert(TakeoutContainer("paper")).block()
-        repo.insert(TakeoutContainer("paper")).block()
+        repo.insert(CreateTakeoutContainer("paper")).block()
+        repo.insert(CreateTakeoutContainer("paper")).block()
 
         StepVerifier.create(repo.deleteAll())
                 .expectNext(2).verifyComplete()

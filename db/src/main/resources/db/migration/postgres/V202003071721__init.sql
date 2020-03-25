@@ -10,21 +10,21 @@ $$;
 GRANT USAGE ON SCHEMA ${schema} TO ${username};
 
 -- data tables
-CREATE TABLE restaurant
+CREATE TABLE restaurants
 (
     id             BIGSERIAL PRIMARY KEY,
     name           VARCHAR(256)             NOT NULL,
     container_type VARCHAR(128)             NOT NULL,
-    create_time    TIMESTAMP WITH TIME ZONE NOT NULL
+    create_time    TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
-GRANT USAGE ON restaurant_id_seq TO ${username};
-CREATE INDEX restaurant_name_idx ON restaurant (name);
-GRANT SELECT, INSERT, UPDATE, DELETE ON restaurant TO ${username};
+GRANT USAGE ON restaurants_id_seq TO ${username};
+CREATE INDEX restaurants_name_idx ON restaurants (name);
+GRANT SELECT, INSERT, UPDATE, DELETE ON restaurants TO ${username};
 
-CREATE TABLE takeout_container
+CREATE TABLE takeout_containers
 (
     id   BIGSERIAL PRIMARY KEY,
     name VARCHAR(256) NOT NULL
 );
-GRANT USAGE ON takeout_container_id_seq TO ${username};
-GRANT SELECT, INSERT, UPDATE, DELETE ON takeout_container TO ${username};
+GRANT USAGE ON takeout_containers_id_seq TO ${username};
+GRANT SELECT, INSERT, UPDATE, DELETE ON takeout_containers TO ${username};

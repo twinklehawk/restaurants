@@ -6,7 +6,7 @@ interface RestaurantsService {
 
     fun findById(id: Long): Mono<Restaurant>
 
-    fun create(restaurant: Restaurant): Mono<Restaurant>
+    fun create(restaurant: CreateRestaurant): Mono<Restaurant>
 
     fun update(id: Long, restaurant: Restaurant): Mono<Restaurant>
 
