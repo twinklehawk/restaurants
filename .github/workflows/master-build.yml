@@ -33,4 +33,4 @@ jobs:
     - name: Run DB migrations
       run: ./gradlew flywayMigrate
     - name: Build and test
-      run: ./gradlew build -DrunIntTests
+      run: ./gradlew build -DrunIntTests=true
