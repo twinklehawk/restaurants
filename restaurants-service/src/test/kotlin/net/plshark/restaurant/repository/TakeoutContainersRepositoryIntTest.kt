@@ -1,7 +1,7 @@
 package net.plshark.restaurant.repository
 
 import io.r2dbc.spi.ConnectionFactories
-import net.plshark.restaurant.model.TakeoutContainer
+import net.plshark.restaurant.TakeoutContainer
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull

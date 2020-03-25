@@ -4,7 +4,7 @@ import io.mockk.every
 import io.mockk.mockk
 import java.time.OffsetDateTime
 import net.plshark.restaurant.exception.NotFoundException
-import net.plshark.restaurant.model.Restaurant
+import net.plshark.restaurant.Restaurant
 import net.plshark.restaurant.repository.RestaurantsRepository
 import org.junit.jupiter.api.Test
 import reactor.core.publisher.Mono
@@ -18,12 +18,20 @@ class RestaurantsControllerTest {
 
     @Test
     fun `create should set the create time and save the restaurant`() {
-        val inserted = Restaurant(321L, "test", "plastic", OffsetDateTime.now())
+        val inserted =
+            Restaurant(321L, "test", "plastic", OffsetDateTime.now())
         every { repo.insert(match {
             it.id == null && it.name == "test" && it.containerType == "plastic" && it.createTime != null
         }) } returns Mono.just(inserted)
 
-        StepVerifier.create(controller.create(Restaurant(123L, "test", "plastic", null)))
+        StepVerifier.create(controller.create(
+            Restaurant(
+                123L,
+                "test",
+                "plastic",
+                null
+            )
+        ))
                 .expectNext(inserted)
                 .verifyComplete()
     }

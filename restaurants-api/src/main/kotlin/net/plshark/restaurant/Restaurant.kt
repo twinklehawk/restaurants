@@ -1,4 +1,4 @@
-package net.plshark.restaurant.model
+package net.plshark.restaurant
 
 import java.time.OffsetDateTime
 

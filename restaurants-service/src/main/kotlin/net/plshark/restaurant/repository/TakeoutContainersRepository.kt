@@ -1,7 +1,7 @@
 package net.plshark.restaurant.repository
 
 import io.r2dbc.spi.Row
-import net.plshark.restaurant.model.TakeoutContainer
+import net.plshark.restaurant.TakeoutContainer
 import org.springframework.data.domain.Sort
 import org.springframework.data.r2dbc.core.DatabaseClient
 import org.springframework.data.r2dbc.query.Criteria

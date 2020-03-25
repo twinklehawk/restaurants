@@ -1,7 +1,8 @@
 package net.plshark.restaurant.controller
 
 import net.plshark.restaurant.exception.NotFoundException
-import net.plshark.restaurant.model.Restaurant
+import net.plshark.restaurant.Restaurant
+import net.plshark.restaurant.RestaurantsService
 import net.plshark.restaurant.repository.RestaurantsRepository
 import org.springframework.web.bind.annotation.*
 import reactor.core.publisher.Flux
@@ -10,15 +11,15 @@ import java.time.OffsetDateTime
 
 @RestController
 @RequestMapping("/restaurants")
-class RestaurantsController(private val repository: RestaurantsRepository) {
+class RestaurantsController(private val repository: RestaurantsRepository) : RestaurantsService {
 
     @PostMapping
-    fun create(@RequestBody restaurant: Restaurant): Mono<Restaurant> {
+    override fun create(@RequestBody restaurant: Restaurant): Mono<Restaurant> {
         return repository.insert(restaurant.copy(id = null, createTime = OffsetDateTime.now()))
     }
 
     @GetMapping("/{id}")
-    fun findById(@PathVariable("id") id: Long): Mono<Restaurant> {
+    override fun findById(@PathVariable("id") id: Long): Mono<Restaurant> {
         return repository.findById(id)
                 .switchIfEmpty(Mono.error { NotFoundException("No restaurant found for ID $id") })
     }
@@ -31,7 +32,7 @@ class RestaurantsController(private val repository: RestaurantsRepository) {
     }
 
     @PutMapping("/{id}")
-    fun update(@PathVariable("id") id: Long, @RequestBody restaurant: Restaurant): Mono<Restaurant> {
+    override fun update(@PathVariable("id") id: Long, @RequestBody restaurant: Restaurant): Mono<Restaurant> {
         val updated = restaurant.copy(id = id)
         return repository.update(updated)
                 .filter { i -> i == 0 }
@@ -41,7 +42,7 @@ class RestaurantsController(private val repository: RestaurantsRepository) {
     }
 
     @DeleteMapping("/{id}")
-    fun delete(@PathVariable("id") id: Long): Mono<Void> {
+    override fun delete(@PathVariable("id") id: Long): Mono<Void> {
         return repository.delete(id)
                 .filter { i -> i == 0 }
                 .flatMap { Mono.error<Any> { NotFoundException("No restaurant found for ID $id") } }

@@ -1,7 +1,7 @@
 package net.plshark.restaurant.repository
 
 import io.r2dbc.spi.Row
-import net.plshark.restaurant.model.Restaurant
+import net.plshark.restaurant.Restaurant
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import org.springframework.data.r2dbc.core.DatabaseClient

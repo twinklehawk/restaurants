@@ -3,7 +3,7 @@ package net.plshark.restaurant.controller
 import io.mockk.every
 import io.mockk.mockk
 import net.plshark.restaurant.exception.NotFoundException
-import net.plshark.restaurant.model.TakeoutContainer
+import net.plshark.restaurant.TakeoutContainer
 import net.plshark.restaurant.repository.TakeoutContainersRepository
 import org.junit.jupiter.api.Test
 import reactor.core.publisher.Flux
@@ -28,7 +28,12 @@ class TakeoutContainersControllerTest {
 
     @Test
     fun `findAll should return all results from the repo`() {
-        every { repo.findAll() } returns Flux.just(TakeoutContainer(1, "paper"), TakeoutContainer(2, "plastic"))
+        every { repo.findAll() } returns Flux.just(
+            TakeoutContainer(
+                1,
+                "paper"
+            ), TakeoutContainer(2, "plastic")
+        )
 
         StepVerifier.create(controller.findAll())
                 .expectNext(TakeoutContainer(1, "paper"))

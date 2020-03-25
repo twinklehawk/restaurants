@@ -1,4 +1,4 @@
-package net.plshark.restaurant.model
+package net.plshark.restaurant
 
 data class TakeoutContainer(val id: Long?, val name: String) {
     constructor(name: String) : this(null, name)
