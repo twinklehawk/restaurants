@@ -42,6 +42,7 @@ class TakeoutContainersRepository(private val client: DatabaseClient) {
     fun findAll(): Flux<TakeoutContainer> {
         return client.select()
             .from(TABLE)
+            .project("*")
             .orderBy(Sort.Order.asc(ID))
             .map(this::mapRow)
             .all()
@@ -54,7 +55,7 @@ class TakeoutContainersRepository(private val client: DatabaseClient) {
      */
     fun delete(id: Long): Mono<Int> {
         return client.delete()
-            .from(TakeoutContainer::class.java)
+            .from(TABLE)
             .matching(Criteria.where(ID).`is`(id))
             .fetch().rowsUpdated()
     }
@@ -64,7 +65,7 @@ class TakeoutContainersRepository(private val client: DatabaseClient) {
      */
     fun deleteAll(): Mono<Int> {
         return client.delete()
-            .from(TakeoutContainer::class.java)
+            .from(TABLE)
             .fetch().rowsUpdated()
     }
 

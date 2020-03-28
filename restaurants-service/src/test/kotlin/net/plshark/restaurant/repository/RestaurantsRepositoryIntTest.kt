@@ -53,9 +53,9 @@ class RestaurantsRepositoryIntTest {
 
     @Test
     fun `findByName should return the matching records`() {
-        val restaurant1 = repo.insert(CreateRestaurant("bears", "paper")).block()
+        val restaurant1 = repo.insert(CreateRestaurant("bears", "paper")).block()!!
         repo.insert(CreateRestaurant("cows", "styrofoam")).block()
-        val restaurant3 = repo.insert(CreateRestaurant("bears", "styrofoam")).block()
+        val restaurant3 = repo.insert(CreateRestaurant("bears", "styrofoam")).block()!!
         
         StepVerifier.create(repo.findByName("bears"))
                 .expectNext(restaurant1)
@@ -71,10 +71,10 @@ class RestaurantsRepositoryIntTest {
 
     @Test
     fun `update should set the name and takeout type`() {
-        val restaurant = repo.insert(CreateRestaurant("bears", "paper")).block()!!
+        var restaurant = repo.insert(CreateRestaurant("bears", "paper")).block()!!
+        restaurant = repo.findById(restaurant.id).block()!!
         val update = Restaurant(restaurant.id, "beets", "rocks", restaurant.createTime)
 
-        
         StepVerifier.create(repo.update(update))
                 .expectNext(1).verifyComplete()
         StepVerifier.create(repo.findById(restaurant.id))
