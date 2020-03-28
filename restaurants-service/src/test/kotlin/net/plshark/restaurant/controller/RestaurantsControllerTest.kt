@@ -3,13 +3,15 @@ package net.plshark.restaurant.controller
 import io.mockk.every
 import io.mockk.mockk
 import net.plshark.restaurant.CreateRestaurant
-import java.time.OffsetDateTime
-import net.plshark.restaurant.exception.NotFoundException
 import net.plshark.restaurant.Restaurant
+import net.plshark.restaurant.exception.NotFoundException
 import net.plshark.restaurant.repository.RestaurantsRepository
 import org.junit.jupiter.api.Test
 import reactor.core.publisher.Mono
-import reactor.test.StepVerifier
+import reactor.kotlin.core.publisher.toMono
+import reactor.kotlin.test.test
+import reactor.kotlin.test.verifyError
+import java.time.OffsetDateTime
 
 @Suppress("ReactorUnusedPublisher")
 class RestaurantsControllerTest {
@@ -20,9 +22,9 @@ class RestaurantsControllerTest {
     @Test
     fun `create should set the create time and save the restaurant`() {
         val inserted = Restaurant(321L, "test", "plastic", OffsetDateTime.now())
-        every { repo.insert(match { it.name == "test" && it.containerType == "plastic" }) } returns Mono.just(inserted)
+        every { repo.insert(match { it.name == "test" && it.containerType == "plastic" }) } returns inserted.toMono()
 
-        StepVerifier.create(controller.create(CreateRestaurant("test", "plastic")))
+        controller.create(CreateRestaurant("test", "plastic")).test()
             .expectNext(inserted)
             .verifyComplete()
     }
@@ -30,9 +32,9 @@ class RestaurantsControllerTest {
     @Test
     fun `findById should return the matching object`() {
         val match = Restaurant(321L, "test", "plastic", OffsetDateTime.now())
-        every { repo.findById(321) } returns Mono.just(match)
+        every { repo.findById(321) } returns match.toMono()
 
-        StepVerifier.create(controller.findById(321))
+        controller.findById(321).test()
             .expectNext(match)
             .verifyComplete()
     }
@@ -41,16 +43,16 @@ class RestaurantsControllerTest {
     fun `findById should throw a NotFoundException if no match is found`() {
         every { repo.findById(123) } returns Mono.empty()
 
-        StepVerifier.create(controller.findById(123))
-            .verifyError(NotFoundException::class.java)
+        controller.findById(123).test()
+            .verifyError(NotFoundException::class)
     }
 
     @Test
     fun `update should send the parsed request body to the repo`() {
         val request = Restaurant(1, "arbys", "plastic", OffsetDateTime.now())
-        every { repo.update(request) } returns Mono.just(1)
+        every { repo.update(request) } returns 1.toMono()
 
-        StepVerifier.create(controller.update(1, request))
+        controller.update(1, request).test()
             .expectNext(request)
             .verifyComplete()
     }
@@ -59,9 +61,9 @@ class RestaurantsControllerTest {
     fun `update should use the ID in the path and ignore the ID in the request body`() {
         val request = Restaurant(1, "arbys", "plastic", OffsetDateTime.now())
         val expected = Restaurant(5, "arbys", "plastic", request.createTime)
-        every { repo.update(expected) } returns Mono.just(1)
+        every { repo.update(expected) } returns 1.toMono()
 
-        StepVerifier.create(controller.update(5, request))
+        controller.update(5, request).test()
             .expectNext(expected)
             .verifyComplete()
     }
@@ -69,25 +71,25 @@ class RestaurantsControllerTest {
     @Test
     fun `update should return a NotFoundException if no record is updated`() {
         val request = Restaurant(1, "arbys", "plastic", OffsetDateTime.now())
-        every { repo.update(any()) } returns Mono.just(0)
+        every { repo.update(any()) } returns 0.toMono()
 
-        StepVerifier.create(controller.update(1, request))
-            .verifyError(NotFoundException::class.java)
+        controller.update(1, request).test()
+            .verifyError(NotFoundException::class)
     }
 
     @Test
     fun `delete should send the ID to the repo`() {
-        every { repo.delete(8) } returns Mono.just(1)
+        every { repo.delete(8) } returns 1.toMono()
 
-        StepVerifier.create(controller.delete(8))
+        controller.delete(8).test()
             .verifyComplete()
     }
 
     @Test
     fun `delete should return a NotFoundException if no record is deleted`() {
-        every { repo.delete(8) } returns Mono.just(0)
+        every { repo.delete(8) } returns 0.toMono()
 
-        StepVerifier.create(controller.delete(8))
-            .verifyError(NotFoundException::class.java)
+        controller.delete(8).test()
+            .verifyError(NotFoundException::class)
     }
 }
