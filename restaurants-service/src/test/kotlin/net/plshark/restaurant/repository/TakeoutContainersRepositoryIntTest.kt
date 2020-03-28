@@ -17,7 +17,8 @@ class TakeoutContainersRepositoryIntTest {
 
     @BeforeEach
     fun setup() {
-        val connectionFactory = ConnectionFactories.get("r2dbc:postgresql://test_user:test_user_pass@localhost:5432/postgres?schema=restaurants")
+        val connectionFactory =
+            ConnectionFactories.get("r2dbc:postgresql://test_user:test_user_pass@localhost:5432/postgres?schema=restaurants")
         repo = TakeoutContainersRepository(DatabaseClient.create(connectionFactory))
     }
 
@@ -39,15 +40,15 @@ class TakeoutContainersRepositoryIntTest {
         val restaurant = repo.insert(CreateTakeoutContainer("bears")).block()!!
 
         StepVerifier.create(repo.delete(restaurant.id))
-                .expectNext(1).verifyComplete()
+            .expectNext(1).verifyComplete()
         StepVerifier.create(repo.findAll())
-                .verifyComplete()
+            .verifyComplete()
     }
 
     @Test
     fun `delete should return 0 when no rows are deleted`() {
         StepVerifier.create(repo.delete(8))
-                .expectNext(0).verifyComplete()
+            .expectNext(0).verifyComplete()
     }
 
     @Test
@@ -56,8 +57,8 @@ class TakeoutContainersRepositoryIntTest {
         repo.insert(CreateTakeoutContainer("paper")).block()
 
         StepVerifier.create(repo.deleteAll())
-                .expectNext(2).verifyComplete()
+            .expectNext(2).verifyComplete()
         StepVerifier.create(repo.findAll())
-                .verifyComplete()
+            .verifyComplete()
     }
 }

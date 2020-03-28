@@ -22,19 +22,22 @@ class WebSecurityConfig {
      * @return the filter chain
      */
     @Bean
-    fun securityFilterChain(http: ServerHttpSecurity, authenticationManager: JwtReactiveAuthenticationManager): SecurityWebFilterChain {
+    fun securityFilterChain(
+        http: ServerHttpSecurity,
+        authenticationManager: JwtReactiveAuthenticationManager
+    ): SecurityWebFilterChain {
         val builder = HttpBearerBuilder(authenticationManager)
         return http
-                .authorizeExchange()
-                .anyExchange()
-                .hasRole("takeout-user")
-                .and()
-                .authenticationManager(authenticationManager)
-                .securityContextRepository(NoOpServerSecurityContextRepository.getInstance())
-                .csrf().disable()
-                .logout().disable()
-                .addFilterAt(builder.buildFilter(), SecurityWebFiltersOrder.HTTP_BASIC)
-                .build()
+            .authorizeExchange()
+            .anyExchange()
+            .hasRole("takeout-user")
+            .and()
+            .authenticationManager(authenticationManager)
+            .securityContextRepository(NoOpServerSecurityContextRepository.getInstance())
+            .csrf().disable()
+            .logout().disable()
+            .addFilterAt(builder.buildFilter(), SecurityWebFiltersOrder.HTTP_BASIC)
+            .build()
     }
 
     @Bean

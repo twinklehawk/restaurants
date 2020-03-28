@@ -23,8 +23,8 @@ class TakeoutContainersControllerTest {
         every { repo.insert(match { it.name == "test" }) } returns Mono.just(inserted)
 
         StepVerifier.create(controller.create(CreateTakeoutContainer("test")))
-                .expectNext(inserted)
-                .verifyComplete()
+            .expectNext(inserted)
+            .verifyComplete()
     }
 
     @Test
@@ -37,17 +37,17 @@ class TakeoutContainersControllerTest {
         )
 
         StepVerifier.create(controller.findAll())
-                .expectNext(TakeoutContainer(1, "paper"))
-                .expectNext(TakeoutContainer(2, "plastic"))
-                .verifyComplete()
+            .expectNext(TakeoutContainer(1, "paper"))
+            .expectNext(TakeoutContainer(2, "plastic"))
+            .verifyComplete()
     }
 
     @Test
     fun `delete should send the ID to the repo`() {
-        every {repo.delete(8) } returns Mono.just(1)
+        every { repo.delete(8) } returns Mono.just(1)
 
         StepVerifier.create(controller.delete(8))
-                .verifyComplete()
+            .verifyComplete()
     }
 
     @Test
@@ -55,6 +55,6 @@ class TakeoutContainersControllerTest {
         every { repo.delete(8) } returns Mono.just(0)
 
         StepVerifier.create(controller.delete(8))
-                .verifyError(NotFoundException::class.java)
+            .verifyError(NotFoundException::class.java)
     }
 }

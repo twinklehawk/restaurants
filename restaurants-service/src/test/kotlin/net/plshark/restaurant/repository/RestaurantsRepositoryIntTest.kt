@@ -18,7 +18,8 @@ class RestaurantsRepositoryIntTest {
 
     @BeforeEach
     fun setup() {
-        val connectionFactory = ConnectionFactories.get("r2dbc:postgresql://test_user:test_user_pass@localhost:5432/postgres?schema=restaurants")
+        val connectionFactory =
+            ConnectionFactories.get("r2dbc:postgresql://test_user:test_user_pass@localhost:5432/postgres?schema=restaurants")
         repo = RestaurantsRepository(DatabaseClient.create(connectionFactory))
     }
 
@@ -41,14 +42,14 @@ class RestaurantsRepositoryIntTest {
         val restaurant = repo.insert(CreateRestaurant("bears", "paper")).block()!!
 
         StepVerifier.create(repo.findById(restaurant.id))
-                .expectNext(restaurant)
-                .verifyComplete()
+            .expectNext(restaurant)
+            .verifyComplete()
     }
 
     @Test
     fun `findById should return empty when no record matches`() {
         StepVerifier.create(repo.findById(18))
-                .verifyComplete()
+            .verifyComplete()
     }
 
     @Test
@@ -56,17 +57,17 @@ class RestaurantsRepositoryIntTest {
         val restaurant1 = repo.insert(CreateRestaurant("bears", "paper")).block()!!
         repo.insert(CreateRestaurant("cows", "styrofoam")).block()
         val restaurant3 = repo.insert(CreateRestaurant("bears", "styrofoam")).block()!!
-        
+
         StepVerifier.create(repo.findByName("bears"))
-                .expectNext(restaurant1)
-                .expectNext(restaurant3)
-                .verifyComplete()
+            .expectNext(restaurant1)
+            .expectNext(restaurant3)
+            .verifyComplete()
     }
 
     @Test
     fun `findByName should return empty when there are no matches`() {
         StepVerifier.create(repo.findByName("reindeer"))
-                .verifyComplete()
+            .verifyComplete()
     }
 
     @Test
@@ -76,9 +77,9 @@ class RestaurantsRepositoryIntTest {
         val update = Restaurant(restaurant.id, "beets", "rocks", restaurant.createTime)
 
         StepVerifier.create(repo.update(update))
-                .expectNext(1).verifyComplete()
+            .expectNext(1).verifyComplete()
         StepVerifier.create(repo.findById(restaurant.id))
-                .expectNext(update).verifyComplete()
+            .expectNext(update).verifyComplete()
     }
 
     @Test
@@ -86,15 +87,15 @@ class RestaurantsRepositoryIntTest {
         val restaurant = repo.insert(CreateRestaurant("bears", "paper")).block()!!
 
         StepVerifier.create(repo.delete(restaurant.id))
-                .expectNext(1).verifyComplete()
+            .expectNext(1).verifyComplete()
         StepVerifier.create(repo.findById(restaurant.id))
-                .verifyComplete()
+            .verifyComplete()
     }
 
     @Test
     fun `delete should return 0 when no rows are deleted`() {
         StepVerifier.create(repo.delete(8))
-                .expectNext(0).verifyComplete()
+            .expectNext(0).verifyComplete()
     }
 
     @Test
@@ -103,8 +104,8 @@ class RestaurantsRepositoryIntTest {
         repo.insert(CreateRestaurant("beets", "paper")).block()
 
         StepVerifier.create(repo.deleteAll())
-                .expectNext(2).verifyComplete()
+            .expectNext(2).verifyComplete()
         StepVerifier.create(repo.findAll(100, 0))
-                .verifyComplete()
+            .verifyComplete()
     }
 }

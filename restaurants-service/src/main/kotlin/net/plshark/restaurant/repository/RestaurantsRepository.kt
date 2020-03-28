@@ -35,7 +35,12 @@ class RestaurantsRepository(private val client: DatabaseClient) {
             .into(TABLE)
             .value(NAME, restaurant.name)
             .value(CONTAINER_TYPE, restaurant.containerType)
-            .map { row: Row -> Pair(row.get(ID, java.lang.Long::class.java)!!.toLong(), row.get(CREATE_TIME, OffsetDateTime::class.java)!!) }
+            .map { row: Row ->
+                Pair(
+                    row.get(ID, java.lang.Long::class.java)!!.toLong(),
+                    row.get(CREATE_TIME, OffsetDateTime::class.java)!!
+                )
+            }
             .one()
             .switchIfEmpty(Mono.error { IllegalStateException("No ID returned from insert") })
             .map { Restaurant(it.first, restaurant.name, restaurant.containerType, it.second) }

@@ -19,7 +19,8 @@ flyway {
     locations = arrayOf("filesystem:src/main/resources/db/migration/postgres")
     schemas = arrayOf("restaurants")
     placeholders = mapOf(
-            "username" to "test_user",
-            "password" to "test_user_pass",
-            "schema" to "restaurants")
+        "username" to "test_user",
+        "password" to "test_user_pass",
+        "schema" to "restaurants"
+    )
 }

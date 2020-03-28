@@ -19,13 +19,12 @@ class RestaurantsControllerTest {
 
     @Test
     fun `create should set the create time and save the restaurant`() {
-        val inserted =
-            Restaurant(321L, "test", "plastic", OffsetDateTime.now())
+        val inserted = Restaurant(321L, "test", "plastic", OffsetDateTime.now())
         every { repo.insert(match { it.name == "test" && it.containerType == "plastic" }) } returns Mono.just(inserted)
 
         StepVerifier.create(controller.create(CreateRestaurant("test", "plastic")))
-                .expectNext(inserted)
-                .verifyComplete()
+            .expectNext(inserted)
+            .verifyComplete()
     }
 
     @Test
@@ -34,8 +33,8 @@ class RestaurantsControllerTest {
         every { repo.findById(321) } returns Mono.just(match)
 
         StepVerifier.create(controller.findById(321))
-                .expectNext(match)
-                .verifyComplete()
+            .expectNext(match)
+            .verifyComplete()
     }
 
     @Test
@@ -43,7 +42,7 @@ class RestaurantsControllerTest {
         every { repo.findById(123) } returns Mono.empty()
 
         StepVerifier.create(controller.findById(123))
-                .verifyError(NotFoundException::class.java)
+            .verifyError(NotFoundException::class.java)
     }
 
     @Test
@@ -52,8 +51,8 @@ class RestaurantsControllerTest {
         every { repo.update(request) } returns Mono.just(1)
 
         StepVerifier.create(controller.update(1, request))
-                .expectNext(request)
-                .verifyComplete()
+            .expectNext(request)
+            .verifyComplete()
     }
 
     @Test
@@ -63,8 +62,8 @@ class RestaurantsControllerTest {
         every { repo.update(expected) } returns Mono.just(1)
 
         StepVerifier.create(controller.update(5, request))
-                .expectNext(expected)
-                .verifyComplete()
+            .expectNext(expected)
+            .verifyComplete()
     }
 
     @Test
@@ -73,7 +72,7 @@ class RestaurantsControllerTest {
         every { repo.update(any()) } returns Mono.just(0)
 
         StepVerifier.create(controller.update(1, request))
-                .verifyError(NotFoundException::class.java)
+            .verifyError(NotFoundException::class.java)
     }
 
     @Test
@@ -81,7 +80,7 @@ class RestaurantsControllerTest {
         every { repo.delete(8) } returns Mono.just(1)
 
         StepVerifier.create(controller.delete(8))
-                .verifyComplete()
+            .verifyComplete()
     }
 
     @Test
@@ -89,6 +88,6 @@ class RestaurantsControllerTest {
         every { repo.delete(8) } returns Mono.just(0)
 
         StepVerifier.create(controller.delete(8))
-                .verifyError(NotFoundException::class.java)
+            .verifyError(NotFoundException::class.java)
     }
 }

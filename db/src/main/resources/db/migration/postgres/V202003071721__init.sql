@@ -1,10 +1,12 @@
 SET search_path TO ${schema};
 
-DO $$
+DO
+$$
     BEGIN
         CREATE USER ${username} PASSWORD '${password}';
-    EXCEPTION WHEN DUPLICATE_OBJECT THEN
-        RAISE NOTICE 'not creating existing user';
+    EXCEPTION
+        WHEN DUPLICATE_OBJECT THEN
+            RAISE NOTICE 'not creating existing user';
     END
 $$;
 GRANT USAGE ON SCHEMA ${schema} TO ${username};

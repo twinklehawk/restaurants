@@ -20,16 +20,16 @@ class ExceptionHandlerAdvice {
         if (status == null)
             status = HttpStatus.INTERNAL_SERVER_ERROR
         return ResponseEntity
-                .status(status)
-                .body(buildResponse(status, e, request))
+            .status(status)
+            .body(buildResponse(status, e, request))
     }
 
     private fun buildResponse(status: HttpStatus, e: Throwable, request: ServerHttpRequest): ErrorResponse {
         return ErrorResponse.builder()
-                .status(status.value())
-                .statusDetail(status.reasonPhrase)
-                .message(e.message)
-                .path(request.uri.toString())
-                .build()
+            .status(status.value())
+            .statusDetail(status.reasonPhrase)
+            .message(e.message)
+            .path(request.uri.toString())
+            .build()
     }
 }
