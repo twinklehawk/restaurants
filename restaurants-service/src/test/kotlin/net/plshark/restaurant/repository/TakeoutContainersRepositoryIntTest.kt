@@ -2,16 +2,15 @@ package net.plshark.restaurant.repository
 
 import io.r2dbc.spi.ConnectionFactories
 import net.plshark.restaurant.CreateTakeoutContainer
+import net.plshark.restaurant.test.IntTest
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.condition.EnabledIfSystemProperty
 import org.springframework.data.r2dbc.core.DatabaseClient
 import reactor.test.StepVerifier
 
-@EnabledIfSystemProperty(named = "runIntTests", matches = "true")
-class TakeoutContainersRepositoryIntTest {
+class TakeoutContainersRepositoryIntTest : IntTest() {
 
     private lateinit var repo: TakeoutContainersRepository
 

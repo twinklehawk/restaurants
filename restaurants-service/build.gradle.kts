@@ -33,13 +33,10 @@ tasks.withType<KotlinCompile> {
     }
 }
 tasks.withType<Test> {
-    useJUnitPlatform()
-
-    val props = mutableMapOf<String, String>()
-    if (System.getProperties().getProperty("runIntTests") == "true")
-        props["runIntTests"] = "true"
-    options {
-        systemProperties(props)
+    val runIntTests = System.getProperties().getProperty("runIntTests") == "true"
+    useJUnitPlatform {
+        if (!runIntTests)
+            excludeTags("integrationTest")
     }
 }
 tasks.jacocoTestReport {
