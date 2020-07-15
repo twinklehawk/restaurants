@@ -1,7 +1,6 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    jacoco
     id("org.springframework.boot")
     kotlin("jvm")
     kotlin("plugin.spring")
@@ -37,12 +36,5 @@ tasks.withType<Test> {
     useJUnitPlatform {
         if (!runIntTests)
             excludeTags("integrationTest")
-    }
-}
-tasks.jacocoTestReport {
-    reports {
-        xml.isEnabled = true
-        html.isEnabled = false
-        csv.isEnabled = false
     }
 }

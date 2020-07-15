@@ -1,7 +1,6 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    jacoco
     kotlin("jvm")
 }
 
@@ -25,11 +24,4 @@ tasks.withType<KotlinCompile> {
 }
 tasks.withType<Test> {
     useJUnitPlatform()
-}
-tasks.jacocoTestReport {
-    reports {
-        xml.isEnabled = true
-        html.isEnabled = false
-        csv.isEnabled = false
-    }
 }
