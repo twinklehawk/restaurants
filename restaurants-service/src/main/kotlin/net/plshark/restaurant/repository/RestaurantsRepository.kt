@@ -97,10 +97,8 @@ class RestaurantsRepository(private val client: DatabaseClient) {
             .matching(Criteria.where(ID).`is`(restaurant.id))
             .fetch().rowsUpdated()
             .flatMap { i ->
-                if (i > 1)
-                    Mono.error { IllegalStateException("Unexpected number of restaurant rows updated: $i") }
-                else
-                    Mono.just(i)
+                if (i > 1) Mono.error { IllegalStateException("Unexpected number of restaurant rows updated: $i") }
+                else Mono.just(i)
             }
     }
 

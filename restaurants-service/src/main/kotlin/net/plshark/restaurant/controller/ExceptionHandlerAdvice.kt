@@ -17,8 +17,7 @@ class ExceptionHandlerAdvice {
     @ExceptionHandler(HttpServerException::class)
     fun handleHttpServerException(e: HttpServerException, request: ServerHttpRequest): ResponseEntity<ErrorResponse> {
         var status = HttpStatus.resolve(e.statusCode)
-        if (status == null)
-            status = HttpStatus.INTERNAL_SERVER_ERROR
+        if (status == null) status = HttpStatus.INTERNAL_SERVER_ERROR
         return ResponseEntity
             .status(status)
             .body(buildResponse(status, e, request))
