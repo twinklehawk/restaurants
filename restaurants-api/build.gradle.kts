@@ -12,7 +12,7 @@ dependencies {
     implementation(kotlin("stdlib-jdk8"))
     testImplementation("org.junit.jupiter:junit-jupiter-api")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
-    testImplementation("io.mockk:mockk:1.9.3")
+    testImplementation("io.mockk:mockk")
     testImplementation("io.projectreactor:reactor-test")
 }
 
