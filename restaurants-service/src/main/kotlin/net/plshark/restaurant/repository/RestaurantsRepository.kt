@@ -6,8 +6,8 @@ import net.plshark.restaurant.Restaurant
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import org.springframework.data.r2dbc.core.DatabaseClient
-import org.springframework.data.r2dbc.query.Criteria
-import org.springframework.data.r2dbc.query.Update
+import org.springframework.data.relational.core.query.Criteria
+import org.springframework.data.relational.core.query.Update
 import org.springframework.stereotype.Repository
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono

@@ -5,7 +5,7 @@ import net.plshark.restaurant.CreateTakeoutContainer
 import net.plshark.restaurant.TakeoutContainer
 import org.springframework.data.domain.Sort
 import org.springframework.data.r2dbc.core.DatabaseClient
-import org.springframework.data.r2dbc.query.Criteria
+import org.springframework.data.relational.core.query.Criteria
 import org.springframework.stereotype.Repository
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
