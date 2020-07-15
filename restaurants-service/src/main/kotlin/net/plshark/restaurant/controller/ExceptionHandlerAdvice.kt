@@ -25,11 +25,11 @@ class ExceptionHandlerAdvice {
     }
 
     private fun buildResponse(status: HttpStatus, e: Throwable, request: ServerHttpRequest): ErrorResponse {
-        return ErrorResponse.builder()
-            .status(status.value())
-            .statusDetail(status.reasonPhrase)
-            .message(e.message)
-            .path(request.uri.toString())
-            .build()
+        return ErrorResponse(
+            status = status.value(),
+            statusDetail = status.reasonPhrase,
+            message = e.message,
+            path = request.uri.toString()
+        )
     }
 }
