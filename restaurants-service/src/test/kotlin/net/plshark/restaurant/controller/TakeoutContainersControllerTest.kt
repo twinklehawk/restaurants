@@ -2,7 +2,7 @@ package net.plshark.restaurant.controller
 
 import io.mockk.every
 import io.mockk.mockk
-import net.plshark.restaurant.CreateTakeoutContainer
+import net.plshark.restaurant.TakeoutContainerCreate
 import net.plshark.restaurant.TakeoutContainer
 import net.plshark.restaurant.exception.NotFoundException
 import net.plshark.restaurant.repository.TakeoutContainersRepository
@@ -23,7 +23,7 @@ class TakeoutContainersControllerTest {
         val inserted = TakeoutContainer(321L, "test")
         every { repo.insert(match { it.name == "test" }) } returns inserted.toMono()
 
-        controller.create(CreateTakeoutContainer("test")).test()
+        controller.create(TakeoutContainerCreate("test")).test()
             .expectNext(inserted)
             .verifyComplete()
     }

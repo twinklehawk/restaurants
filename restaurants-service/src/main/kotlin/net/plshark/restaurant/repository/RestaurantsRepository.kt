@@ -1,23 +1,17 @@
 package net.plshark.restaurant.repository
 
 import io.r2dbc.spi.Row
-import net.plshark.restaurant.CreateRestaurant
 import net.plshark.restaurant.Restaurant
+import net.plshark.restaurant.RestaurantCreate
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import org.springframework.data.r2dbc.core.DatabaseClient
+import org.springframework.data.r2dbc.mapping.SettableValue
 import org.springframework.data.relational.core.query.Criteria
 import org.springframework.data.relational.core.query.Update
 import org.springframework.stereotype.Repository
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
-import java.time.OffsetDateTime
-
-private const val TABLE = "restaurants"
-private const val ID = "id"
-private const val NAME = "name"
-private const val CONTAINER_TYPE = "container_type"
-private const val CREATE_TIME = "create_time"
 
 /**
  * Repository for storing and retrieving restaurants
@@ -30,20 +24,16 @@ class RestaurantsRepository(private val client: DatabaseClient) {
      * @param restaurant the data to save
      * @return the saved data, never empty
      */
-    fun insert(restaurant: CreateRestaurant): Mono<Restaurant> {
+    fun insert(restaurant: RestaurantCreate): Mono<Restaurant> {
         return client.insert()
             .into(TABLE)
             .value(NAME, restaurant.name)
-            .value(CONTAINER_TYPE, restaurant.containerType)
-            .map { row: Row ->
-                Pair(
-                    row.get(ID, java.lang.Long::class.java)!!.toLong(),
-                    row.get(CREATE_TIME, OffsetDateTime::class.java)!!
-                )
-            }
+            .value(TYPE, restaurant.type)
+            .value(ADDRESS, SettableValue.fromOrEmpty(restaurant.address, String::class.java))
+            .map { row: Row -> row.get(ID, java.lang.Long::class.java)!!.toLong() }
             .one()
             .switchIfEmpty(Mono.error { IllegalStateException("No ID returned from insert") })
-            .map { Restaurant(it.first, restaurant.name, restaurant.containerType, it.second) }
+            .map { restaurant.toRestaurant(it) }
     }
 
     fun findAll(limit: Int, page: Int): Flux<Restaurant> {
@@ -93,7 +83,7 @@ class RestaurantsRepository(private val client: DatabaseClient) {
     fun update(restaurant: Restaurant): Mono<Int> {
         return client.update()
             .table(TABLE)
-            .using(Update.update(CONTAINER_TYPE, restaurant.containerType).set(NAME, restaurant.name))
+            .using(Update.update(NAME, restaurant.name).set(TYPE, restaurant.type).set(ADDRESS, restaurant.address))
             .matching(Criteria.where(ID).`is`(restaurant.id))
             .fetch().rowsUpdated()
             .flatMap { i ->
@@ -127,8 +117,15 @@ class RestaurantsRepository(private val client: DatabaseClient) {
         return Restaurant(
             r.get(ID, java.lang.Long::class.java)!!.toLong(),
             r.get(NAME, String::class.java)!!,
-            r.get(CONTAINER_TYPE, String::class.java)!!,
-            r.get(CREATE_TIME, OffsetDateTime::class.java)!!
+            r.get(TYPE, String::class.java)!!,
+            r.get(ADDRESS, String::class.java),
+            emptyList()
         )
     }
 }
+
+private const val TABLE = "restaurants"
+private const val ID = "id"
+private const val NAME = "name"
+private const val TYPE = "type"
+private const val ADDRESS = "address"

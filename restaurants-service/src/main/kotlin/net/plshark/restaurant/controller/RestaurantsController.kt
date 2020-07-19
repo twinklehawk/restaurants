@@ -1,10 +1,11 @@
 package net.plshark.restaurant.controller
 
-import net.plshark.restaurant.CreateRestaurant
+import net.plshark.restaurant.RestaurantCreate
 import net.plshark.restaurant.exception.NotFoundException
 import net.plshark.restaurant.Restaurant
 import net.plshark.restaurant.RestaurantsService
 import net.plshark.restaurant.repository.RestaurantsRepository
+import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -22,7 +23,8 @@ import reactor.core.publisher.Mono
 class RestaurantsController(private val repository: RestaurantsRepository) : RestaurantsService {
 
     @PostMapping
-    override fun create(@RequestBody restaurant: CreateRestaurant): Mono<Restaurant> {
+    @Transactional
+    override fun create(@RequestBody restaurant: RestaurantCreate): Mono<Restaurant> {
         return repository.insert(restaurant)
     }
 
