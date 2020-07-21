@@ -6,7 +6,7 @@ import net.plshark.restaurant.test.DbIntTest
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import reactor.test.StepVerifier
+import reactor.kotlin.test.test
 
 internal class RestaurantContainersRepositoryTest : DbIntTest() {
 
@@ -35,10 +35,10 @@ internal class RestaurantContainersRepositoryTest : DbIntTest() {
             .block()!!
         val container = containersRepository.insert(TakeoutContainerCreate("paper")).block()!!
 
-        StepVerifier.create(repo.insert(restaurant.id, container.id))
+        repo.insert(restaurant.id, container.id).test()
             .expectNextCount(1)
             .verifyComplete()
-        StepVerifier.create(repo.getContainersForRestaurant(restaurant.id))
+        repo.getContainersForRestaurant(restaurant.id).test()
             .expectNext(container)
             .verifyComplete()
     }
@@ -48,7 +48,7 @@ internal class RestaurantContainersRepositoryTest : DbIntTest() {
         val restaurant = restaurantsRepository.insert(RestaurantCreate("test restaurant", "test", null, emptyList()))
             .block()!!
 
-        StepVerifier.create(repo.getContainersForRestaurant(restaurant.id))
+        repo.getContainersForRestaurant(restaurant.id).test()
             .verifyComplete()
     }
 
@@ -67,7 +67,7 @@ internal class RestaurantContainersRepositoryTest : DbIntTest() {
             .and(repo.insert(restaurant2.id, plastic.id))
             .block()
 
-        StepVerifier.create(repo.getContainersForRestaurant(restaurant.id))
+        repo.getContainersForRestaurant(restaurant.id).test()
             .expectNext(paper, sandstone)
             .verifyComplete()
     }
@@ -82,13 +82,13 @@ internal class RestaurantContainersRepositoryTest : DbIntTest() {
         repo.insert(restaurant.id, paper.id).block()!!
         val plasticId = repo.insert(restaurant.id, plastic.id).block()!!
 
-        StepVerifier.create(repo.delete(plasticId))
+        repo.delete(plasticId).test()
             .expectNext(1)
             .verifyComplete()
-        StepVerifier.create(repo.delete(plasticId))
+        repo.delete(plasticId).test()
             .expectNext(0)
             .verifyComplete()
-        StepVerifier.create(repo.getContainersForRestaurant(restaurant.id))
+        repo.getContainersForRestaurant(restaurant.id).test()
             .expectNext(paper)
             .verifyComplete()
     }
@@ -102,13 +102,13 @@ internal class RestaurantContainersRepositoryTest : DbIntTest() {
 
         repo.insert(restaurant.id, paper.id).and(repo.insert(restaurant.id, plastic.id)).block()
 
-        StepVerifier.create(repo.deleteAll())
+        repo.deleteAll().test()
             .expectNext(2)
             .verifyComplete()
-        StepVerifier.create(repo.deleteAll())
+        repo.deleteAll().test()
             .expectNext(0)
             .verifyComplete()
-        StepVerifier.create(repo.getContainersForRestaurant(restaurant.id))
+        repo.getContainersForRestaurant(restaurant.id).test()
             .verifyComplete()
     }
 }

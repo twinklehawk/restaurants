@@ -6,7 +6,7 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import reactor.test.StepVerifier
+import reactor.kotlin.test.test
 
 class TakeoutContainersRepositoryIntTest : DbIntTest() {
 
@@ -34,15 +34,15 @@ class TakeoutContainersRepositoryIntTest : DbIntTest() {
     fun `delete should remove a previously inserted record`() {
         val restaurant = repo.insert(TakeoutContainerCreate("bears")).block()!!
 
-        StepVerifier.create(repo.delete(restaurant.id))
+        repo.delete(restaurant.id).test()
             .expectNext(1).verifyComplete()
-        StepVerifier.create(repo.findAll())
+        repo.findAll().test()
             .verifyComplete()
     }
 
     @Test
     fun `delete should return 0 when no rows are deleted`() {
-        StepVerifier.create(repo.delete(8))
+        repo.delete(8).test()
             .expectNext(0).verifyComplete()
     }
 
@@ -51,9 +51,9 @@ class TakeoutContainersRepositoryIntTest : DbIntTest() {
         repo.insert(TakeoutContainerCreate("paper")).block()
         repo.insert(TakeoutContainerCreate("paper")).block()
 
-        StepVerifier.create(repo.deleteAll())
+        repo.deleteAll().test()
             .expectNext(2).verifyComplete()
-        StepVerifier.create(repo.findAll())
+        repo.findAll().test()
             .verifyComplete()
     }
 }

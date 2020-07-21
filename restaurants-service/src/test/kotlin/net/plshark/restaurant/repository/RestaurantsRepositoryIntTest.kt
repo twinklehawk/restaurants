@@ -7,7 +7,7 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import reactor.test.StepVerifier
+import reactor.kotlin.test.test
 
 class RestaurantsRepositoryIntTest : DbIntTest() {
 
@@ -35,14 +35,14 @@ class RestaurantsRepositoryIntTest : DbIntTest() {
     fun `findById should return a previously inserted record`() {
         val restaurant = repo.insert(RestaurantCreate("bears", "bad", "1234 street", emptyList())).block()!!
 
-        StepVerifier.create(repo.findById(restaurant.id))
+        repo.findById(restaurant.id).test()
             .expectNext(restaurant)
             .verifyComplete()
     }
 
     @Test
     fun `findById should return empty when no record matches`() {
-        StepVerifier.create(repo.findById(18))
+        repo.findById(18).test()
             .verifyComplete()
     }
 
@@ -52,7 +52,7 @@ class RestaurantsRepositoryIntTest : DbIntTest() {
         repo.insert(RestaurantCreate("cows", "burgers", null, emptyList())).block()
         val restaurant3 = repo.insert(RestaurantCreate("bears", "burgers", null, emptyList())).block()!!
 
-        StepVerifier.create(repo.findByName("bears"))
+        repo.findByName("bears").test()
             .expectNext(restaurant1)
             .expectNext(restaurant3)
             .verifyComplete()
@@ -60,7 +60,7 @@ class RestaurantsRepositoryIntTest : DbIntTest() {
 
     @Test
     fun `findByName should return empty when there are no matches`() {
-        StepVerifier.create(repo.findByName("reindeer"))
+        repo.findByName("reindeer").test()
             .verifyComplete()
     }
 
@@ -70,9 +70,9 @@ class RestaurantsRepositoryIntTest : DbIntTest() {
         restaurant = repo.findById(restaurant.id).block()!!
         val update = Restaurant(restaurant.id, "beets", "rocks", "address", emptyList())
 
-        StepVerifier.create(repo.update(update))
+        repo.update(update).test()
             .expectNext(1).verifyComplete()
-        StepVerifier.create(repo.findById(restaurant.id))
+        repo.findById(restaurant.id).test()
             .expectNext(update).verifyComplete()
     }
 
@@ -80,15 +80,15 @@ class RestaurantsRepositoryIntTest : DbIntTest() {
     fun `delete should remove a previously inserted record`() {
         val restaurant = repo.insert(RestaurantCreate("bears", "burgers", null, emptyList())).block()!!
 
-        StepVerifier.create(repo.delete(restaurant.id))
+        repo.delete(restaurant.id).test()
             .expectNext(1).verifyComplete()
-        StepVerifier.create(repo.findById(restaurant.id))
+        repo.findById(restaurant.id).test()
             .verifyComplete()
     }
 
     @Test
     fun `delete should return 0 when no rows are deleted`() {
-        StepVerifier.create(repo.delete(8))
+        repo.delete(8).test()
             .expectNext(0).verifyComplete()
     }
 
@@ -97,9 +97,9 @@ class RestaurantsRepositoryIntTest : DbIntTest() {
         repo.insert(RestaurantCreate("bears", "burgers", null, emptyList())).block()
         repo.insert(RestaurantCreate("beets", "burgers", null, emptyList())).block()
 
-        StepVerifier.create(repo.deleteAll())
+        repo.deleteAll().test()
             .expectNext(2).verifyComplete()
-        StepVerifier.create(repo.findAll(100, 0))
+        repo.findAll(100, 0).test()
             .verifyComplete()
     }
 }
