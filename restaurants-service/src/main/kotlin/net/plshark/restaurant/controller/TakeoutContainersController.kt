@@ -1,6 +1,6 @@
 package net.plshark.restaurant.controller
 
-import net.plshark.restaurant.CreateTakeoutContainer
+import net.plshark.restaurant.TakeoutContainerCreate
 import net.plshark.restaurant.exception.NotFoundException
 import net.plshark.restaurant.TakeoutContainer
 import net.plshark.restaurant.TakeoutContainersService
@@ -20,7 +20,7 @@ import reactor.core.publisher.Mono
 class TakeoutContainersController(private val repository: TakeoutContainersRepository) : TakeoutContainersService {
 
     @PostMapping
-    override fun create(@RequestBody container: CreateTakeoutContainer): Mono<TakeoutContainer> {
+    override fun create(@RequestBody container: TakeoutContainerCreate): Mono<TakeoutContainer> {
         return repository.insert(container)
     }
 

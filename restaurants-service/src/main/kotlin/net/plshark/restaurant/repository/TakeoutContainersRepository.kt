@@ -1,8 +1,8 @@
 package net.plshark.restaurant.repository
 
 import io.r2dbc.spi.Row
-import net.plshark.restaurant.CreateTakeoutContainer
 import net.plshark.restaurant.TakeoutContainer
+import net.plshark.restaurant.TakeoutContainerCreate
 import org.springframework.data.domain.Sort
 import org.springframework.data.r2dbc.core.DatabaseClient
 import org.springframework.data.relational.core.query.Criteria
@@ -25,14 +25,14 @@ class TakeoutContainersRepository(private val client: DatabaseClient) {
      * @param container the data to save
      * @return the saved data, never empty
      */
-    fun insert(container: CreateTakeoutContainer): Mono<TakeoutContainer> {
+    fun insert(container: TakeoutContainerCreate): Mono<TakeoutContainer> {
         return client.insert()
             .into(TABLE)
             .value(NAME, container.name)
             .map { row: Row -> row.get(ID, java.lang.Long::class.java)!!.toLong() }
             .one()
             .switchIfEmpty(Mono.error { IllegalStateException("No ID returned from insert") })
-            .map { id -> TakeoutContainer(id, container.name) }
+            .map { container.toTakeoutContainer(it) }
     }
 
     /**
@@ -44,7 +44,7 @@ class TakeoutContainersRepository(private val client: DatabaseClient) {
             .from(TABLE)
             .project("*")
             .orderBy(Sort.Order.asc(ID))
-            .map(this::mapRow)
+            .map { row: Row -> mapRow(row) }
             .all()
     }
 
@@ -69,10 +69,15 @@ class TakeoutContainersRepository(private val client: DatabaseClient) {
             .fetch().rowsUpdated()
     }
 
-    private fun mapRow(r: Row): TakeoutContainer {
-        return TakeoutContainer(
-            r.get(ID, Long::class.java)!!,
-            r.get(NAME, String::class.java)!!
-        )
+    companion object {
+        /**
+         * Map a [Row] to a [TakeoutContainer]
+         */
+        fun mapRow(r: Row): TakeoutContainer {
+            return TakeoutContainer(
+                r.get(ID, Long::class.java)!!,
+                r.get(NAME, String::class.java)!!
+            )
+        }
     }
 }

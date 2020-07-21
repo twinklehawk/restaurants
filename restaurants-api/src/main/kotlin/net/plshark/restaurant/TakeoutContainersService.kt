@@ -5,7 +5,7 @@ import reactor.core.publisher.Mono
 
 interface TakeoutContainersService {
 
-    fun create(container: CreateTakeoutContainer): Mono<TakeoutContainer>
+    fun create(container: TakeoutContainerCreate): Mono<TakeoutContainer>
 
     fun findAll(): Flux<TakeoutContainer>
 

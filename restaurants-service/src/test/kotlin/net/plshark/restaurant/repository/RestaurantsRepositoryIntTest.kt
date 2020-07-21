@@ -1,25 +1,21 @@
 package net.plshark.restaurant.repository
 
-import io.r2dbc.spi.ConnectionFactories
-import net.plshark.restaurant.CreateRestaurant
 import net.plshark.restaurant.Restaurant
-import net.plshark.restaurant.test.IntTest
+import net.plshark.restaurant.RestaurantCreate
+import net.plshark.restaurant.test.DbIntTest
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.springframework.data.r2dbc.core.DatabaseClient
-import reactor.test.StepVerifier
+import reactor.kotlin.test.test
 
-class RestaurantsRepositoryIntTest : IntTest() {
+class RestaurantsRepositoryIntTest : DbIntTest() {
 
     private lateinit var repo: RestaurantsRepository
 
     @BeforeEach
     fun setup() {
-        val connectionFactory =
-            ConnectionFactories.get("r2dbc:postgresql://test_user:test_user_pass@localhost:5432/postgres?schema=restaurants")
-        repo = RestaurantsRepository(DatabaseClient.create(connectionFactory))
+        repo = RestaurantsRepository(databaseClient)
     }
 
     @AfterEach
@@ -29,35 +25,34 @@ class RestaurantsRepositoryIntTest : IntTest() {
 
     @Test
     fun `insert should return the inserted object with the generated ID set`() {
-        val restaurant = CreateRestaurant("bears", "paper")
+        val restaurant = RestaurantCreate("bears", "burgers", null, emptyList())
         val inserted = repo.insert(restaurant).block()!!
 
-        assertEquals(restaurant.name, inserted.name)
-        assertEquals(restaurant.containerType, inserted.containerType)
+        assertEquals(restaurant.toRestaurant(inserted.id), inserted.name)
     }
 
     @Test
     fun `findById should return a previously inserted record`() {
-        val restaurant = repo.insert(CreateRestaurant("bears", "paper")).block()!!
+        val restaurant = repo.insert(RestaurantCreate("bears", "bad", "1234 street", emptyList())).block()!!
 
-        StepVerifier.create(repo.findById(restaurant.id))
+        repo.findById(restaurant.id).test()
             .expectNext(restaurant)
             .verifyComplete()
     }
 
     @Test
     fun `findById should return empty when no record matches`() {
-        StepVerifier.create(repo.findById(18))
+        repo.findById(18).test()
             .verifyComplete()
     }
 
     @Test
     fun `findByName should return the matching records`() {
-        val restaurant1 = repo.insert(CreateRestaurant("bears", "paper")).block()!!
-        repo.insert(CreateRestaurant("cows", "styrofoam")).block()
-        val restaurant3 = repo.insert(CreateRestaurant("bears", "styrofoam")).block()!!
+        val restaurant1 = repo.insert(RestaurantCreate("bears", "burgers", null, emptyList())).block()!!
+        repo.insert(RestaurantCreate("cows", "burgers", null, emptyList())).block()
+        val restaurant3 = repo.insert(RestaurantCreate("bears", "burgers", null, emptyList())).block()!!
 
-        StepVerifier.create(repo.findByName("bears"))
+        repo.findByName("bears").test()
             .expectNext(restaurant1)
             .expectNext(restaurant3)
             .verifyComplete()
@@ -65,46 +60,46 @@ class RestaurantsRepositoryIntTest : IntTest() {
 
     @Test
     fun `findByName should return empty when there are no matches`() {
-        StepVerifier.create(repo.findByName("reindeer"))
+        repo.findByName("reindeer").test()
             .verifyComplete()
     }
 
     @Test
-    fun `update should set the name and takeout type`() {
-        var restaurant = repo.insert(CreateRestaurant("bears", "paper")).block()!!
+    fun `update should set the name, type, and address`() {
+        var restaurant = repo.insert(RestaurantCreate("bears", "burgers", null, emptyList())).block()!!
         restaurant = repo.findById(restaurant.id).block()!!
-        val update = Restaurant(restaurant.id, "beets", "rocks", restaurant.createTime)
+        val update = Restaurant(restaurant.id, "beets", "rocks", "address", emptyList())
 
-        StepVerifier.create(repo.update(update))
+        repo.update(update).test()
             .expectNext(1).verifyComplete()
-        StepVerifier.create(repo.findById(restaurant.id))
+        repo.findById(restaurant.id).test()
             .expectNext(update).verifyComplete()
     }
 
     @Test
     fun `delete should remove a previously inserted record`() {
-        val restaurant = repo.insert(CreateRestaurant("bears", "paper")).block()!!
+        val restaurant = repo.insert(RestaurantCreate("bears", "burgers", null, emptyList())).block()!!
 
-        StepVerifier.create(repo.delete(restaurant.id))
+        repo.delete(restaurant.id).test()
             .expectNext(1).verifyComplete()
-        StepVerifier.create(repo.findById(restaurant.id))
+        repo.findById(restaurant.id).test()
             .verifyComplete()
     }
 
     @Test
     fun `delete should return 0 when no rows are deleted`() {
-        StepVerifier.create(repo.delete(8))
+        repo.delete(8).test()
             .expectNext(0).verifyComplete()
     }
 
     @Test
     fun `deleteAll should remove everything in the table`() {
-        repo.insert(CreateRestaurant("bears", "paper")).block()
-        repo.insert(CreateRestaurant("beets", "paper")).block()
+        repo.insert(RestaurantCreate("bears", "burgers", null, emptyList())).block()
+        repo.insert(RestaurantCreate("beets", "burgers", null, emptyList())).block()
 
-        StepVerifier.create(repo.deleteAll())
+        repo.deleteAll().test()
             .expectNext(2).verifyComplete()
-        StepVerifier.create(repo.findAll(100, 0))
+        repo.findAll(100, 0).test()
             .verifyComplete()
     }
 }
