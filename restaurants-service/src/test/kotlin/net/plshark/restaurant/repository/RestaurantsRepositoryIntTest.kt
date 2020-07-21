@@ -28,7 +28,7 @@ class RestaurantsRepositoryIntTest : DbIntTest() {
         val restaurant = RestaurantCreate("bears", "burgers", null, emptyList())
         val inserted = repo.insert(restaurant).block()!!
 
-        assertEquals(restaurant.toRestaurant(inserted.id), inserted.name)
+        assertEquals(restaurant.toRestaurant(inserted.id), inserted)
     }
 
     @Test

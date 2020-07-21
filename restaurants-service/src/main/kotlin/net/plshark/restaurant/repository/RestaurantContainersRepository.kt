@@ -2,7 +2,6 @@ package net.plshark.restaurant.repository
 
 import io.r2dbc.spi.Row
 import net.plshark.restaurant.TakeoutContainer
-import org.springframework.data.domain.Sort
 import org.springframework.data.r2dbc.core.DatabaseClient
 import org.springframework.data.relational.core.query.Criteria
 import org.springframework.stereotype.Repository
@@ -37,11 +36,9 @@ class RestaurantContainersRepository(private val client: DatabaseClient) {
      * @return a [Flux] containing all the containers
      */
     fun getContainersForRestaurant(restaurantId: Long): Flux<TakeoutContainer> {
-        return client.select()
-            .from(TABLE)
-            .project("*")
-            .matching(Criteria.where(RESTAURANT_ID).`is`(restaurantId))
-            .orderBy(Sort.Order.asc(ID))
+        return client.execute("SELECT c.* FROM takeout_containers c, restaurant_containers rc WHERE " +
+                "rc.restaurant_id = :restaurantId AND c.id = rc.takeout_container_ID ORDER BY c.id")
+            .bind("restaurantId", restaurantId)
             .map { row: Row -> TakeoutContainersRepository.mapRow(row) }
             .all()
     }
