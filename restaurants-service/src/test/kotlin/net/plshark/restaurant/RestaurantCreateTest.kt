@@ -7,8 +7,8 @@ class RestaurantCreateTest {
 
     @Test
     fun `toRestaurant should copy the object data into a restaurant with the provided ID`() {
-        val create = RestaurantCreate("test", "type", "addr", listOf(TakeoutContainer(321, "container")))
-        assertEquals(Restaurant(123, "test", "type", "addr", listOf(TakeoutContainer(321, "container"))),
+        val create = RestaurantCreate("test", "type", "addr", listOf(321))
+        assertEquals(Restaurant(123, "test", "type", "addr", emptyList()),
             create.toRestaurant(123))
     }
 }
