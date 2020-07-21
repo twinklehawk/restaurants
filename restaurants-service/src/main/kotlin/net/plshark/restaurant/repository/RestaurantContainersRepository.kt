@@ -15,6 +15,12 @@ import reactor.core.publisher.Mono
 @Repository
 class RestaurantContainersRepository(private val client: DatabaseClient) {
 
+    /**
+     * Add a container type to a restaurant
+     * @param restaurantId the ID of the restaurant
+     * @param containerId the ID of the container type
+     * @return a [Mono] containing the ID of the association
+     */
     fun insert(restaurantId: Long, containerId: Long): Mono<Long> {
         return client.insert()
             .into(TABLE)
@@ -25,6 +31,11 @@ class RestaurantContainersRepository(private val client: DatabaseClient) {
             .switchIfEmpty(Mono.error { IllegalStateException("No ID returned from insert") })
     }
 
+    /**
+     * Get all the container types associated with a restaurant
+     * @param restaurantId the ID of the restaurant
+     * @return a [Flux] containing all the containers
+     */
     fun getContainersForRestaurant(restaurantId: Long): Flux<TakeoutContainer> {
         return client.select()
             .from(TABLE)
@@ -35,6 +46,11 @@ class RestaurantContainersRepository(private val client: DatabaseClient) {
             .all()
     }
 
+    /**
+     * Delete a restaurant-container association by ID
+     * @param id the association ID
+     * @return a [Mono] containing the number of rows deleted
+     */
     fun delete(id: Long): Mono<Int> {
         return client.delete()
             .from(TABLE)
@@ -42,6 +58,10 @@ class RestaurantContainersRepository(private val client: DatabaseClient) {
             .fetch().rowsUpdated()
     }
 
+    /**
+     * Delete all restaurant-container associations
+     * @return a [Mono] containing the number of rows deleted
+     */
     fun deleteAll(): Mono<Int> {
         return client.delete()
             .from(TABLE)
