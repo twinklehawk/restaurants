@@ -1,25 +1,21 @@
 package net.plshark.restaurant.repository
 
-import io.r2dbc.spi.ConnectionFactories
-import net.plshark.restaurant.RestaurantCreate
 import net.plshark.restaurant.Restaurant
-import net.plshark.restaurant.test.IntTest
+import net.plshark.restaurant.RestaurantCreate
+import net.plshark.restaurant.test.DbIntTest
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.springframework.data.r2dbc.core.DatabaseClient
 import reactor.test.StepVerifier
 
-class RestaurantsRepositoryIntTest : IntTest() {
+class RestaurantsRepositoryIntTest : DbIntTest() {
 
     private lateinit var repo: RestaurantsRepository
 
     @BeforeEach
     fun setup() {
-        val connectionFactory =
-            ConnectionFactories.get("r2dbc:postgresql://test_user:test_user_pass@localhost:5432/postgres?schema=restaurants")
-        repo = RestaurantsRepository(DatabaseClient.create(connectionFactory))
+        repo = RestaurantsRepository(databaseClient)
     }
 
     @AfterEach
