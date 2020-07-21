@@ -4,27 +4,36 @@ import io.mockk.every
 import io.mockk.mockk
 import net.plshark.restaurant.Restaurant
 import net.plshark.restaurant.RestaurantCreate
+import net.plshark.restaurant.TakeoutContainer
 import net.plshark.restaurant.exception.NotFoundException
+import net.plshark.restaurant.repository.RestaurantContainersRepository
 import net.plshark.restaurant.repository.RestaurantsRepository
 import org.junit.jupiter.api.Test
+import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.toMono
 import reactor.kotlin.test.test
 import reactor.kotlin.test.verifyError
 
-@Suppress("ReactorUnusedPublisher")
+@Suppress("ReactiveStreamsUnusedPublisher")
 class RestaurantsControllerTest {
 
     private val repo = mockk<RestaurantsRepository>()
-    private val controller = RestaurantsController(repo)
+    private val restaurantContainersRepository = mockk<RestaurantContainersRepository>()
+    private val controller = RestaurantsController(repo, restaurantContainersRepository)
 
     @Test
-    fun `create should set the create time and save the restaurant`() {
-        val inserted = Restaurant(321L, "test", "italian", null, emptyList())
-        every { repo.insert(match { it.name == "test" && it.type == "italian" && it.address == null }) } returns inserted.toMono()
+    fun `create should save the restaurant and the associated containers`() {
+        val create = RestaurantCreate("test", "italian", null, listOf(1, 2))
+        val restaurant = Restaurant(321L, "test", "italian", null, emptyList())
+        every { repo.insert(create) } returns restaurant.toMono()
+        every { restaurantContainersRepository.insert(321, match { it == 1L || it == 2L } )} returns
+                Mono.just(1)
+        every { restaurantContainersRepository.getContainersForRestaurant(321) } returns
+                Flux.just(TakeoutContainer(1, "1"), TakeoutContainer(2, "2"))
 
-        controller.create(RestaurantCreate("test", "italian", null, emptyList())).test()
-            .expectNext(inserted)
+        controller.create(create).test()
+            .expectNext(restaurant.copy(containers = listOf(TakeoutContainer(1, "1"), TakeoutContainer(2, "2"))))
             .verifyComplete()
     }
 
@@ -32,9 +41,11 @@ class RestaurantsControllerTest {
     fun `findById should return the matching object`() {
         val match = Restaurant(321L, "test", "chinese", "1234 street", emptyList())
         every { repo.findById(321) } returns match.toMono()
+        every { restaurantContainersRepository.getContainersForRestaurant(321) } returns
+                Flux.just(TakeoutContainer(123, "paper"))
 
         controller.findById(321).test()
-            .expectNext(match)
+            .expectNext(match.copy(containers = listOf(TakeoutContainer(123, "paper"))))
             .verifyComplete()
     }
 
