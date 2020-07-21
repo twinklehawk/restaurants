@@ -58,9 +58,15 @@ class RestaurantsControllerTest {
     }
 
     @Test
-    fun `update should send the parsed request body to the repo`() {
-        val request = Restaurant(1, "arbys", "burgers", null, emptyList())
+    fun `update should update the restaurant and the container types`() {
+        val request = Restaurant(1, "arbys", "burgers", null,
+            listOf(TakeoutContainer(5, "styrofoam"), TakeoutContainer(4, "paper")))
         every { repo.update(request) } returns 1.toMono()
+        every { restaurantContainersRepository.getContainersForRestaurant(1) }.returnsMany(
+            Flux.just(TakeoutContainer(3, "plastic"), TakeoutContainer(4, "paper")),
+            Flux.just(TakeoutContainer(5, "styrofoam"), TakeoutContainer(4, "paper")))
+        every { restaurantContainersRepository.delete(3) } returns Mono.just(1)
+        every { restaurantContainersRepository.insert(1, 5) } returns Mono.just(1)
 
         controller.update(1, request).test()
             .expectNext(request)
@@ -72,6 +78,7 @@ class RestaurantsControllerTest {
         val request = Restaurant(1, "arbys", "fast food", null, emptyList())
         val expected = Restaurant(5, "arbys", "fast food", null, emptyList())
         every { repo.update(expected) } returns 1.toMono()
+        every { restaurantContainersRepository.getContainersForRestaurant(5) } returns Flux.empty()
 
         controller.update(5, request).test()
             .expectNext(expected)
@@ -82,6 +89,7 @@ class RestaurantsControllerTest {
     fun `update should return a NotFoundException if no record is updated`() {
         val request = Restaurant(1, "arbys", "burgers", null, emptyList())
         every { repo.update(any()) } returns 0.toMono()
+        every { restaurantContainersRepository.getContainersForRestaurant(any()) } returns Flux.empty()
 
         controller.update(1, request).test()
             .verifyError(NotFoundException::class)

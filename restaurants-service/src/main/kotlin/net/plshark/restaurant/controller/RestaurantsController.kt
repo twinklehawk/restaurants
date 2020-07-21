@@ -1,9 +1,9 @@
 package net.plshark.restaurant.controller
 
-import net.plshark.restaurant.RestaurantCreate
-import net.plshark.restaurant.exception.NotFoundException
 import net.plshark.restaurant.Restaurant
+import net.plshark.restaurant.RestaurantCreate
 import net.plshark.restaurant.RestaurantsService
+import net.plshark.restaurant.exception.NotFoundException
 import net.plshark.restaurant.repository.RestaurantContainersRepository
 import net.plshark.restaurant.repository.RestaurantsRepository
 import org.springframework.transaction.annotation.Transactional
@@ -54,15 +54,25 @@ class RestaurantsController(
         return repository.findAll(limit, page)
     }
 
-    // TODO redo this too
     @PutMapping("/{id}")
-    override fun update(@PathVariable("id") id: Long, @RequestBody restaurant: Restaurant): Mono<Restaurant> {
-        val updated = restaurant.copy(id = id)
-        return repository.update(updated)
+    override fun update(@PathVariable("id") id: Long, @RequestBody update: Restaurant): Mono<Restaurant> {
+        val restaurant = update.copy(id = id)
+        return repository.update(restaurant)
             .filter { i -> i == 0 }
             .flatMap { Mono.error<Any> { NotFoundException("No restaurant found for ID $id") } }
-            // TODO this may not return the values actually in the DB for columns that can't be updated
-            .then(Mono.just(updated))
+            .thenMany(restaurantContainersRepository.getContainersForRestaurant(restaurant.id))
+            .collectList()
+            .flatMapMany { existing ->
+                val updateIds = update.containers.map { it.id }
+                val existingIds = existing.map { it.id }
+                val toDelete = existingIds.filter { !updateIds.contains(it) }
+                val toAdd = updateIds.filter { id: Long -> !existingIds.contains(id) }
+
+                toDelete.toFlux()
+                    .flatMap { restaurantContainersRepository.delete(it) }
+                    .thenMany(toAdd.toFlux())
+                    .flatMap { restaurantContainersRepository.insert(restaurant.id, it) }
+            }.then(fillRestaurant(restaurant))
     }
 
     @DeleteMapping("/{id}")
