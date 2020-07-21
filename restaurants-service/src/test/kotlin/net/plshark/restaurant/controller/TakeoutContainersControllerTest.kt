@@ -12,7 +12,7 @@ import reactor.kotlin.core.publisher.toMono
 import reactor.kotlin.test.test
 import reactor.kotlin.test.verifyError
 
-@Suppress("ReactorUnusedPublisher")
+@Suppress("ReactiveStreamsUnusedPublisher")
 class TakeoutContainersControllerTest {
 
     private val repo = mockk<TakeoutContainersRepository>()
