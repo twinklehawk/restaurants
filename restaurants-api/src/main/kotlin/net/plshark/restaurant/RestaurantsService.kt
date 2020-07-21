@@ -19,7 +19,13 @@ interface RestaurantsService {
      */
     fun create(create: RestaurantCreate): Mono<Restaurant>
 
-    fun update(id: Long, restaurant: Restaurant): Mono<Restaurant>
+    /**
+     * Update an existing restaurant
+     * @param id the ID of the restaurant to update
+     * @param update the data to update, the ID will be ignored
+     * @return a [Mono] containing the updated restaurant or a [NotFoundException] if not found
+     */
+    fun update(id: Long, update: Restaurant): Mono<Restaurant>
 
     /**
      * Delete an existing restaurant
