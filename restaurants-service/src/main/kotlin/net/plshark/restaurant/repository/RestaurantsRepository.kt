@@ -75,9 +75,7 @@ class RestaurantsRepository(private val client: DatabaseClient) {
 
     /**
      * Update an existing restaurant by its ID
-     *
-     * Only the container type and name can be updated
-     * @param restaurant the restaurant to update with the new data to set, the ID must not be null
+     * @param restaurant the restaurant to update with the new data to set
      * @return the number of rows updated, never empty
      */
     fun update(restaurant: Restaurant): Mono<Int> {
