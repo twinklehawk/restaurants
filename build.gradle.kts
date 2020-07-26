@@ -42,3 +42,9 @@ tasks.withType<com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
     checkConstraints = true
     gradleReleaseChannel = "current"
 }
+
+task("printVersion") {
+    doFirst {
+        println("$version")
+    }
+}
