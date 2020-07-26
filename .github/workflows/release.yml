@@ -20,7 +20,7 @@ jobs:
         java-version: 1.11
     - name: Set project version
       id: set-project-version
-      run: echo "::set-output name=project_version::${./gradlew printVersion -q}
+      run: echo "::set-output name=project_version::$(./gradlew printVersion -q)"
     - name: Build
       run: ./gradlew build -x test
     - name: Build docker image
