@@ -3,7 +3,6 @@ package net.plshark.restaurant.repository
 import net.plshark.restaurant.RestaurantCreate
 import net.plshark.restaurant.TakeoutContainerCreate
 import net.plshark.testutils.DbTest
-import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.r2dbc.core.DatabaseClient
