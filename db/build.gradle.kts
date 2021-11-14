@@ -6,6 +6,12 @@ buildscript {
 
 plugins {
     id("org.flywaydb.flyway") version "8.0.4"
+    java
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
 }
 
 flyway {
