@@ -8,7 +8,7 @@ plugins {
 
 allprojects {
     repositories {
-        jcenter()
+        mavenCentral()
         maven { setUrl("https://dl.bintray.com/twinklehawk/maven") }
     }
     group = "net.plshark.takeoutcontainers"
