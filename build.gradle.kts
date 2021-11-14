@@ -22,9 +22,9 @@ configure(subprojects.filter { it.name != "platform" && it.name != "db" } ) {
 
     tasks.withType<JacocoReport> {
         reports {
-            xml.isEnabled = true
-            html.isEnabled = false
-            csv.isEnabled = false
+            xml.required.set(true)
+            html.required.set(true)
+            csv.required.set(false)
         }
     }
 
