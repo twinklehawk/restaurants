@@ -27,7 +27,7 @@ class RestaurantsControllerTest {
         val create = RestaurantCreate("test", "italian", null, listOf(1, 2))
         val restaurant = Restaurant(321L, "test", "italian", null, emptyList())
         every { repo.insert(create) } returns restaurant.toMono()
-        every { restaurantContainersRepository.insert(321, match { it == 1L || it == 2L } )} returns
+        every { restaurantContainersRepository.insert(321, match { it == 1L || it == 2L }) } returns
                 Mono.just(1)
         every { restaurantContainersRepository.getContainersForRestaurant(321) } returns
                 Flux.just(TakeoutContainer(1, "1"), TakeoutContainer(2, "2"))

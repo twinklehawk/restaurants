@@ -12,8 +12,8 @@ open class DbIntTest : IntTest() {
 
     @BeforeEach
     fun setupConnection() {
-        connectionFactory =
-            ConnectionFactories.get("r2dbc:postgresql://test_user:test_user_pass@localhost:5432/postgres?schema=restaurants")
+        val url = "r2dbc:postgresql://test_user:test_user_pass@localhost:5432/postgres?schema=restaurants"
+        connectionFactory = ConnectionFactories.get(url)
         databaseClient = DatabaseClient.create(connectionFactory)
     }
 }

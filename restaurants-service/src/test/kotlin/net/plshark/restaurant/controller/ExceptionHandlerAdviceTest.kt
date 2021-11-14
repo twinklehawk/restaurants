@@ -16,7 +16,7 @@ class ExceptionHandlerAdviceTest {
     private val request = mockk<ServerHttpRequest>()
 
     @Test
-    fun `should build a response with the status code and message from the HttpServerException and the URL from the request`() {
+    fun `should build a response with the status and message from the exception and the URL from the request`() {
         every { request.uri } returns URI.create("http://localhost/test/path")
 
         val response = handler.handleNotFoundException(NotFoundException("test missing"), request)
