@@ -13,15 +13,18 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-webflux")
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-data-r2dbc")
-    runtimeOnly("io.r2dbc:r2dbc-postgresql")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
     implementation(kotlin("reflect"))
     implementation(kotlin("stdlib-jdk8"))
+    runtimeOnly("io.r2dbc:r2dbc-postgresql")
     testImplementation("org.junit.jupiter:junit-jupiter-api")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
+    testImplementation("org.flywaydb:flyway-core")
     testImplementation("io.mockk:mockk")
     testImplementation("io.projectreactor:reactor-test")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
+    testRuntimeOnly("org.postgresql:postgresql")
+    testRuntimeOnly(project(":db"))
 }
 
 java { sourceCompatibility = JavaVersion.VERSION_1_8 }

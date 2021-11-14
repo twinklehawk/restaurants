@@ -31,8 +31,6 @@ jobs:
         with:
           distribution: adopt
           java-version: 11
-      - name: Run DB migrations
-        run: ./gradlew flywayMigrate
       - name: Build and test
         env:
           GPR_USER: ${{ secrets.GPR_USER }}

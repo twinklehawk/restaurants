@@ -2,8 +2,7 @@ package net.plshark.restaurant.repository
 
 import io.r2dbc.spi.Row
 import net.plshark.restaurant.TakeoutContainer
-import org.springframework.data.r2dbc.core.DatabaseClient
-import org.springframework.data.relational.core.query.Criteria
+import org.springframework.r2dbc.core.DatabaseClient
 import org.springframework.stereotype.Repository
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
@@ -21,11 +20,12 @@ class RestaurantContainersRepository(private val client: DatabaseClient) {
      * @return a [Mono] containing the ID of the association
      */
     fun insert(restaurantId: Long, containerId: Long): Mono<Long> {
-        return client.insert()
-            .into(TABLE)
-            .value(RESTAURANT_ID, restaurantId)
-            .value(TAKEOUT_CONTAINER_ID, containerId)
-            .map { row: Row -> row.get(ID, java.lang.Long::class.java)!!.toLong() }
+        val sql = "INSERT INTO restaurant_containers (restaurant_id, takeout_container_id) VALUES (:restaurantId, " +
+                ":takeoutContainerId) RETURNING id"
+        return client.sql(sql)
+            .bind("restaurantId", restaurantId)
+            .bind("takeoutContainerId", containerId)
+            .map { row: Row -> row.get("id", java.lang.Long::class.java)!!.toLong() }
             .one()
             .switchIfEmpty(Mono.error { IllegalStateException("No ID returned from insert") })
     }
@@ -36,7 +36,7 @@ class RestaurantContainersRepository(private val client: DatabaseClient) {
      * @return a [Flux] containing all the containers
      */
     fun getContainersForRestaurant(restaurantId: Long): Flux<TakeoutContainer> {
-        return client.execute("SELECT c.* FROM takeout_containers c, restaurant_containers rc WHERE " +
+        return client.sql("SELECT c.* FROM takeout_containers c, restaurant_containers rc WHERE " +
                 "rc.restaurant_id = :restaurantId AND c.id = rc.takeout_container_ID ORDER BY c.id")
             .bind("restaurantId", restaurantId)
             .map { row: Row -> TakeoutContainersRepository.mapRow(row) }
@@ -49,9 +49,8 @@ class RestaurantContainersRepository(private val client: DatabaseClient) {
      * @return a [Mono] containing the number of rows deleted
      */
     fun delete(id: Long): Mono<Int> {
-        return client.delete()
-            .from(TABLE)
-            .matching(Criteria.where(ID).`is`(id))
+        return client.sql("DELETE FROM takeout_containers WHERE id = :id")
+            .bind("id", id)
             .fetch().rowsUpdated()
     }
 
@@ -60,13 +59,7 @@ class RestaurantContainersRepository(private val client: DatabaseClient) {
      * @return a [Mono] containing the number of rows deleted
      */
     fun deleteAll(): Mono<Int> {
-        return client.delete()
-            .from(TABLE)
+        return client.sql("DELETE FROM takeout_containers")
             .fetch().rowsUpdated()
     }
 }
-
-private const val TABLE = "restaurant_containers"
-private const val ID = "id"
-private const val RESTAURANT_ID = "restaurant_id"
-private const val TAKEOUT_CONTAINER_ID = "takeout_container_id"

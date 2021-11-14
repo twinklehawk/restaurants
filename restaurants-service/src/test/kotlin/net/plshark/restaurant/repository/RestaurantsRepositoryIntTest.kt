@@ -2,25 +2,21 @@ package net.plshark.restaurant.repository
 
 import net.plshark.restaurant.Restaurant
 import net.plshark.restaurant.RestaurantCreate
-import net.plshark.restaurant.test.DbIntTest
-import org.junit.jupiter.api.AfterEach
+import net.plshark.testutils.DbTest
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.springframework.r2dbc.core.DatabaseClient
 import reactor.kotlin.test.test
 
-class RestaurantsRepositoryIntTest : DbIntTest() {
+@DbTest
+class RestaurantsRepositoryIntTest {
 
     private lateinit var repo: RestaurantsRepository
 
     @BeforeEach
-    fun setup() {
-        repo = RestaurantsRepository(databaseClient)
-    }
-
-    @AfterEach
-    fun cleanup() {
-        repo.deleteAll().block()
+    fun setup(db: DatabaseClient) {
+        repo = RestaurantsRepository(db)
     }
 
     @Test

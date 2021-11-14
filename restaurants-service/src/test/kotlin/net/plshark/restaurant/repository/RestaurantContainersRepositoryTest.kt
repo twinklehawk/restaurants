@@ -2,31 +2,25 @@ package net.plshark.restaurant.repository
 
 import net.plshark.restaurant.RestaurantCreate
 import net.plshark.restaurant.TakeoutContainerCreate
-import net.plshark.restaurant.test.DbIntTest
+import net.plshark.testutils.DbTest
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.springframework.r2dbc.core.DatabaseClient
 import reactor.kotlin.test.test
 
-internal class RestaurantContainersRepositoryTest : DbIntTest() {
+@DbTest
+internal class RestaurantContainersRepositoryTest {
 
     private lateinit var repo: RestaurantContainersRepository
     private lateinit var restaurantsRepository: RestaurantsRepository
     private lateinit var containersRepository: TakeoutContainersRepository
 
     @BeforeEach
-    fun setup() {
-        repo = RestaurantContainersRepository(databaseClient)
-        restaurantsRepository = RestaurantsRepository(databaseClient)
-        containersRepository = TakeoutContainersRepository(databaseClient)
-    }
-
-    @AfterEach
-    fun cleanup() {
-        repo.deleteAll()
-            .then(restaurantsRepository.deleteAll())
-            .then(containersRepository.deleteAll())
-            .block()
+    fun setup(db: DatabaseClient) {
+        repo = RestaurantContainersRepository(db)
+        restaurantsRepository = RestaurantsRepository(db)
+        containersRepository = TakeoutContainersRepository(db)
     }
 
     @Test

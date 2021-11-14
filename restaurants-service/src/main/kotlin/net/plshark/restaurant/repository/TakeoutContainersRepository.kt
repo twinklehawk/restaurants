@@ -3,16 +3,10 @@ package net.plshark.restaurant.repository
 import io.r2dbc.spi.Row
 import net.plshark.restaurant.TakeoutContainer
 import net.plshark.restaurant.TakeoutContainerCreate
-import org.springframework.data.domain.Sort
-import org.springframework.data.r2dbc.core.DatabaseClient
-import org.springframework.data.relational.core.query.Criteria
+import org.springframework.r2dbc.core.DatabaseClient
 import org.springframework.stereotype.Repository
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
-
-private const val TABLE = "takeout_containers"
-private const val ID = "id"
-private const val NAME = "name"
 
 /**
  * Repository for storing and retrieving takeout container types
@@ -26,9 +20,8 @@ class TakeoutContainersRepository(private val client: DatabaseClient) {
      * @return the saved data, never empty
      */
     fun insert(container: TakeoutContainerCreate): Mono<TakeoutContainer> {
-        return client.insert()
-            .into(TABLE)
-            .value(NAME, container.name)
+        return client.sql("INSERT INTO takeout_containers (name) VALUES (:name) RETURNING id")
+            .bind(NAME, container.name)
             .map { row: Row -> row.get(ID, java.lang.Long::class.java)!!.toLong() }
             .one()
             .switchIfEmpty(Mono.error { IllegalStateException("No ID returned from insert") })
@@ -40,10 +33,7 @@ class TakeoutContainersRepository(private val client: DatabaseClient) {
      * @return all takeout containers, can be empty
      */
     fun findAll(): Flux<TakeoutContainer> {
-        return client.select()
-            .from(TABLE)
-            .project("*")
-            .orderBy(Sort.Order.asc(ID))
+        return client.sql("SELECT * FROM takeout_containers ORDER BY id")
             .map { row: Row -> mapRow(row) }
             .all()
     }
@@ -54,9 +44,8 @@ class TakeoutContainersRepository(private val client: DatabaseClient) {
      * @return the number of rows deleted, never empty
      */
     fun delete(id: Long): Mono<Int> {
-        return client.delete()
-            .from(TABLE)
-            .matching(Criteria.where(ID).`is`(id))
+        return client.sql("DELETE FROM takeout_containers WHERE id = :id")
+            .bind("id", id)
             .fetch().rowsUpdated()
     }
 
@@ -64,12 +53,15 @@ class TakeoutContainersRepository(private val client: DatabaseClient) {
      * Delete all takeout container types
      */
     fun deleteAll(): Mono<Int> {
-        return client.delete()
-            .from(TABLE)
+        return client.sql("DELETE FROM takeout_containers")
             .fetch().rowsUpdated()
     }
 
     companion object {
+
+        const val ID = "id"
+        const val NAME = "name"
+
         /**
          * Map a [Row] to a [TakeoutContainer]
          */

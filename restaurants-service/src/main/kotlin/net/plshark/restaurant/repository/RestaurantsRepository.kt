@@ -3,12 +3,8 @@ package net.plshark.restaurant.repository
 import io.r2dbc.spi.Row
 import net.plshark.restaurant.Restaurant
 import net.plshark.restaurant.RestaurantCreate
-import org.springframework.data.domain.PageRequest
-import org.springframework.data.domain.Sort
-import org.springframework.data.r2dbc.core.DatabaseClient
-import org.springframework.data.r2dbc.mapping.SettableValue
-import org.springframework.data.relational.core.query.Criteria
-import org.springframework.data.relational.core.query.Update
+import org.springframework.r2dbc.core.DatabaseClient
+import org.springframework.r2dbc.core.Parameter
 import org.springframework.stereotype.Repository
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
@@ -25,11 +21,11 @@ class RestaurantsRepository(private val client: DatabaseClient) {
      * @return the saved data, never empty
      */
     fun insert(restaurant: RestaurantCreate): Mono<Restaurant> {
-        return client.insert()
-            .into(TABLE)
-            .value(NAME, restaurant.name)
-            .value(TYPE, restaurant.type)
-            .value(ADDRESS, SettableValue.fromOrEmpty(restaurant.address, String::class.java))
+        val sql = "INSERT INTO restaurants (name, type, address) VALUES (:name, :type, :address) RETURNING id"
+        return client.sql(sql)
+            .bind(NAME, restaurant.name)
+            .bind(TYPE, restaurant.type)
+            .bind(ADDRESS, Parameter.fromOrEmpty(restaurant.address, String::class.java))
             .map { row: Row -> row.get(ID, java.lang.Long::class.java)!!.toLong() }
             .one()
             .switchIfEmpty(Mono.error { IllegalStateException("No ID returned from insert") })
@@ -37,10 +33,8 @@ class RestaurantsRepository(private val client: DatabaseClient) {
     }
 
     fun findAll(limit: Int, page: Int): Flux<Restaurant> {
-        return client.select()
-            .from(TABLE)
-            .project("*")
-            .page(PageRequest.of(page, limit, Sort.by(Sort.Order.asc(ID))))
+        val offset = page * limit
+        return client.sql("SELECT * FROM restaurants ORDER BY id LIMIT $limit OFFSET $offset")
             .map(this::mapRow)
             .all()
     }
@@ -51,10 +45,8 @@ class RestaurantsRepository(private val client: DatabaseClient) {
      * @return the matching restaurant or empty if not found
      */
     fun findById(id: Long): Mono<Restaurant> {
-        return client.select()
-            .from(TABLE)
-            .project("*")
-            .matching(Criteria.where(ID).`is`(id))
+        return client.sql("SELECT * FROM restaurants WHERE id = :id")
+            .bind("id", id)
             .map(this::mapRow)
             .one()
     }
@@ -65,10 +57,8 @@ class RestaurantsRepository(private val client: DatabaseClient) {
      * @return the matching restaurants, can be empty
      */
     fun findByName(name: String): Flux<Restaurant> {
-        return client.select()
-            .from(TABLE)
-            .project("*")
-            .matching(Criteria.where(NAME).`is`(name))
+        return client.sql("SELECT * FROM restaurants WHERE name = :name")
+            .bind("name", name)
             .map(this::mapRow)
             .all()
     }
@@ -79,10 +69,12 @@ class RestaurantsRepository(private val client: DatabaseClient) {
      * @return the number of rows updated, never empty
      */
     fun update(restaurant: Restaurant): Mono<Int> {
-        return client.update()
-            .table(TABLE)
-            .using(Update.update(NAME, restaurant.name).set(TYPE, restaurant.type).set(ADDRESS, restaurant.address))
-            .matching(Criteria.where(ID).`is`(restaurant.id))
+        val sql = "UPDATE restaurants SET name = :name, type = :type, address = :address WHERE id = :id"
+        return client.sql(sql)
+            .bind("name", restaurant.name)
+            .bind("type", restaurant.type)
+            .bind("address", Parameter.fromOrEmpty(restaurant.address, String::class.java))
+            .bind("id", restaurant.id)
             .fetch().rowsUpdated()
             .flatMap { i ->
                 if (i > 1) Mono.error { IllegalStateException("Unexpected number of restaurant rows updated: $i") }
@@ -96,9 +88,8 @@ class RestaurantsRepository(private val client: DatabaseClient) {
      * @return the number of rows deleted, never empty
      */
     fun delete(id: Long): Mono<Int> {
-        return client.delete()
-            .from(TABLE)
-            .matching(Criteria.where(ID).`is`(id))
+        return client.sql("DELETE FROM restaurants WHERE id = :id")
+            .bind("id", id)
             .fetch().rowsUpdated()
     }
 
@@ -106,8 +97,7 @@ class RestaurantsRepository(private val client: DatabaseClient) {
      * Delete all restaurants
      */
     fun deleteAll(): Mono<Int> {
-        return client.delete()
-            .from(TABLE)
+        return client.sql("DELETE FROM restaurants")
             .fetch().rowsUpdated()
     }
 
@@ -120,10 +110,11 @@ class RestaurantsRepository(private val client: DatabaseClient) {
             emptyList()
         )
     }
-}
 
-private const val TABLE = "restaurants"
-private const val ID = "id"
-private const val NAME = "name"
-private const val TYPE = "type"
-private const val ADDRESS = "address"
+    companion object {
+        const val ID = "id"
+        const val NAME = "name"
+        const val TYPE = "type"
+        const val ADDRESS = "address"
+    }
+}
