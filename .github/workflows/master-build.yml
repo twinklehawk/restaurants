@@ -34,4 +34,7 @@ jobs:
       - name: Run DB migrations
         run: ./gradlew flywayMigrate
       - name: Build and test
+        env:
+          GPR_USER: ${{ secrets.GPR_USER }}
+          GPR_TOKEN: ${{ secrets.GPR_TOKEN }}
         run: ./gradlew build -DrunIntTests=true

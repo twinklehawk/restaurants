@@ -23,6 +23,9 @@ jobs:
 #      id: set-project-version
 #      run: echo "::set-output name=project_version::$(./gradlew printVersion -q)"
     - name: Build
+      env:
+        GPR_USER: ${{ secrets.GPR_USER }}
+        GPR_TOKEN: ${{ secrets.GPR_TOKEN }}
       run: ./gradlew build -x test
 #    - name: Build docker image
 #      uses: docker/build-push-action@v1
