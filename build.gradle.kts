@@ -11,7 +11,7 @@ allprojects {
         mavenCentral()
         maven { setUrl("https://dl.bintray.com/twinklehawk/maven") }
     }
-    group = "net.plshark.takeoutcontainers"
+    group = "net.plshark.restaurants"
     version = "0.0.1"
 }
 
