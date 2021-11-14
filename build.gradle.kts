@@ -8,7 +8,9 @@ plugins {
 allprojects {
     repositories {
         mavenCentral()
-        maven { setUrl("https://dl.bintray.com/twinklehawk/maven") }
+        maven {
+            url = uri("https://maven.pkg.github.com/twinklehawk/user-error")
+        }
     }
     group = "net.plshark.restaurants"
     version = "0.0.1"
