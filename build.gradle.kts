@@ -2,7 +2,7 @@ plugins {
     kotlin("jvm") version "1.3.72" apply false
     kotlin("plugin.spring") version "1.3.72" apply false
     id("org.springframework.boot") version "2.3.1.RELEASE" apply false
-    id("io.gitlab.arturbosch.detekt") version "1.10.0" apply false
+    id("io.gitlab.arturbosch.detekt") version "1.18.1" apply false
 }
 
 allprojects {
@@ -35,7 +35,7 @@ configure(subprojects.filter { it.name != "platform" && it.name != "db" } ) {
     }
 
     dependencies {
-        "detektPlugins"("io.gitlab.arturbosch.detekt:detekt-formatting:1.10.0")
+        "detektPlugins"("io.gitlab.arturbosch.detekt:detekt-formatting:1.18.1")
     }
 }
 
