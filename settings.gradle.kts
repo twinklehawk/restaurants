@@ -1,3 +1,3 @@
-rootProject.name = "takeout-containers"
+rootProject.name = "restaurants"
 
 include("platform", "db", "restaurants-api", "restaurants-service")
