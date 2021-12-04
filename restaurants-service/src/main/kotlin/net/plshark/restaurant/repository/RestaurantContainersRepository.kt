@@ -21,7 +21,7 @@ class RestaurantContainersRepository(private val client: DatabaseClient) {
      */
     fun insert(restaurantId: Long, containerId: Long): Mono<Long> {
         val sql = "INSERT INTO restaurant_containers (restaurant_id, takeout_container_id) VALUES (:restaurantId, " +
-                ":takeoutContainerId) RETURNING id"
+            ":takeoutContainerId) RETURNING id"
         return client.sql(sql)
             .bind("restaurantId", restaurantId)
             .bind("takeoutContainerId", containerId)
@@ -36,8 +36,9 @@ class RestaurantContainersRepository(private val client: DatabaseClient) {
      * @return a [Flux] containing all the containers
      */
     fun getContainersForRestaurant(restaurantId: Long): Flux<TakeoutContainer> {
-        return client.sql("SELECT c.* FROM takeout_containers c, restaurant_containers rc WHERE " +
-                "rc.restaurant_id = :restaurantId AND c.id = rc.takeout_container_ID ORDER BY c.id")
+        val sql = "SELECT c.* FROM takeout_containers c, restaurant_containers rc WHERE " +
+            "rc.restaurant_id = :restaurantId AND c.id = rc.takeout_container_ID ORDER BY c.id"
+        return client.sql(sql)
             .bind("restaurantId", restaurantId)
             .map { row: Row -> TakeoutContainersRepository.mapRow(row) }
             .all()
