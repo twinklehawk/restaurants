@@ -11,6 +11,6 @@ dependencies {
 
     constraints {
         api("net.plshark:user-error-client:0.4.1")
-        api("io.mockk:mockk:1.12.1")
+        api("io.mockk:mockk:1.12.2")
     }
 }
