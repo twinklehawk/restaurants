@@ -7,7 +7,7 @@ javaPlatform {
 }
 
 dependencies {
-    api(enforcedPlatform("org.springframework.boot:spring-boot-dependencies:2.6.3"))
+    api(enforcedPlatform("org.springframework.boot:spring-boot-dependencies:2.6.4"))
 
     constraints {
         api("net.plshark:user-error-client:0.4.1")
