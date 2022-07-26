@@ -37,10 +37,6 @@ configure(subprojects.filter { it.name != "platform" && it.name != "db" } ) {
         buildUponDefaultConfig = true
         jvmTarget = "1.8"
     }
-
-    dependencies {
-        "detektPlugins"("io.gitlab.arturbosch.detekt:detekt-formatting:1.19.0")
-    }
 }
 
 task("printVersion") {
