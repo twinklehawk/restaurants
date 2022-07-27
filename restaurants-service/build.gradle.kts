@@ -17,7 +17,7 @@ dependencies {
     implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
     implementation(kotlin("reflect"))
     implementation(kotlin("stdlib-jdk8"))
-    runtimeOnly("io.r2dbc:r2dbc-postgresql")
+    runtimeOnly("org.postgresql:r2dbc-postgresql")
     testImplementation("org.junit.jupiter:junit-jupiter-api")
     testImplementation("org.flywaydb:flyway-core")
     testImplementation("io.mockk:mockk")
