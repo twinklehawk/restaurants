@@ -9,7 +9,6 @@ plugins {
 dependencies {
     implementation(enforcedPlatform(project(":platform")))
     implementation(project(":restaurants-api"))
-    implementation("net.plshark:user-error-client")
     implementation("org.springframework.boot:spring-boot-starter-webflux")
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-data-r2dbc")

@@ -1,6 +1,5 @@
 package net.plshark.restaurant.controller
 
-import net.plshark.errors.ErrorResponse
 import net.plshark.restaurant.exception.NotFoundException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
