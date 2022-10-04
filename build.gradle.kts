@@ -8,13 +8,6 @@ plugins {
 allprojects {
     repositories {
         mavenCentral()
-        maven {
-            url = uri("https://maven.pkg.github.com/twinklehawk/user-error")
-            credentials {
-                username = project.findProperty("gpr.user") as String? ?: System.getenv("GPR_USER")
-                password = project.findProperty("gpr.key") as String? ?: System.getenv("GPR_TOKEN")
-            }
-        }
     }
     group = "net.plshark.restaurants"
     version = "0.0.1"
