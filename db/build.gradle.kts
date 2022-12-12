@@ -1,6 +1,6 @@
 buildscript {
     dependencies {
-        classpath("org.postgresql:postgresql:42.5.0")
+        classpath("org.postgresql:postgresql:42.5.1")
     }
 }
 
