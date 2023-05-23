@@ -23,6 +23,7 @@ class DbExtension : BeforeEachCallback, AfterEachCallback, ParameterResolver {
                 "schema" to "users"
             )
         )
+        .cleanDisabled(false)
         .load()
 
     override fun beforeEach(context: ExtensionContext) {
