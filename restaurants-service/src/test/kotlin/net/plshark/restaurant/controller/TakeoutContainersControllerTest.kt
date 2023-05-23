@@ -43,7 +43,7 @@ class TakeoutContainersControllerTest {
 
     @Test
     fun `delete should send the ID to the repo`() {
-        every { repo.delete(8) } returns 1.toMono()
+        every { repo.delete(8) } returns 1L.toMono()
 
         controller.delete(8).test()
             .verifyComplete()
@@ -51,7 +51,7 @@ class TakeoutContainersControllerTest {
 
     @Test
     fun `delete should return a NotFoundException if no record is deleted`() {
-        every { repo.delete(8) } returns 0.toMono()
+        every { repo.delete(8) } returns 0L.toMono()
 
         controller.delete(8).test()
             .verifyError(NotFoundException::class)

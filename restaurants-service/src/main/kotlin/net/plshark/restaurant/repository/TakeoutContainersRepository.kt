@@ -1,5 +1,6 @@
 package net.plshark.restaurant.repository
 
+import io.r2dbc.spi.Readable
 import io.r2dbc.spi.Row
 import net.plshark.restaurant.TakeoutContainer
 import net.plshark.restaurant.TakeoutContainerCreate
@@ -22,7 +23,7 @@ class TakeoutContainersRepository(private val client: DatabaseClient) {
     fun insert(container: TakeoutContainerCreate): Mono<TakeoutContainer> {
         return client.sql("INSERT INTO takeout_containers (name) VALUES (:name) RETURNING id")
             .bind(NAME, container.name)
-            .map { row: Row -> row.get(ID, java.lang.Long::class.java)!!.toLong() }
+            .map { row -> row.get(ID, java.lang.Long::class.java)!!.toLong() }
             .one()
             .switchIfEmpty(Mono.error { IllegalStateException("No ID returned from insert") })
             .map { container.toTakeoutContainer(it) }
@@ -34,7 +35,7 @@ class TakeoutContainersRepository(private val client: DatabaseClient) {
      */
     fun findAll(): Flux<TakeoutContainer> {
         return client.sql("SELECT * FROM takeout_containers ORDER BY id")
-            .map { row: Row -> mapRow(row) }
+            .map { row -> mapRow(row) }
             .all()
     }
 
@@ -43,7 +44,7 @@ class TakeoutContainersRepository(private val client: DatabaseClient) {
      * @param id the ID to delete
      * @return the number of rows deleted, never empty
      */
-    fun delete(id: Long): Mono<Int> {
+    fun delete(id: Long): Mono<Long> {
         return client.sql("DELETE FROM takeout_containers WHERE id = :id")
             .bind("id", id)
             .fetch().rowsUpdated()
@@ -52,7 +53,7 @@ class TakeoutContainersRepository(private val client: DatabaseClient) {
     /**
      * Delete all takeout container types
      */
-    fun deleteAll(): Mono<Int> {
+    fun deleteAll(): Mono<Long> {
         return client.sql("DELETE FROM takeout_containers")
             .fetch().rowsUpdated()
     }
@@ -65,7 +66,7 @@ class TakeoutContainersRepository(private val client: DatabaseClient) {
         /**
          * Map a [Row] to a [TakeoutContainer]
          */
-        fun mapRow(r: Row): TakeoutContainer {
+        fun mapRow(r: Readable): TakeoutContainer {
             return TakeoutContainer(
                 r.get(ID, java.lang.Long::class.java)!!.toLong(),
                 r.get(NAME, String::class.java)!!

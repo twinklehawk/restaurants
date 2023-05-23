@@ -7,15 +7,7 @@ import net.plshark.restaurant.exception.NotFoundException
 import net.plshark.restaurant.repository.RestaurantContainersRepository
 import net.plshark.restaurant.repository.RestaurantsRepository
 import org.springframework.transaction.annotation.Transactional
-import org.springframework.web.bind.annotation.DeleteMapping
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.PutMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestParam
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.toFlux
@@ -58,7 +50,7 @@ class RestaurantsController(
     override fun update(@PathVariable("id") id: Long, @RequestBody update: Restaurant): Mono<Restaurant> {
         val restaurant = update.copy(id = id)
         return repository.update(restaurant)
-            .filter { i -> i == 0 }
+            .filter { i -> i == 0L }
             .flatMap { Mono.error<Any> { NotFoundException("No restaurant found for ID $id") } }
             .thenMany(restaurantContainersRepository.getContainersForRestaurant(restaurant.id))
             .collectList()
@@ -78,7 +70,7 @@ class RestaurantsController(
     @DeleteMapping("/{id}")
     override fun delete(@PathVariable("id") id: Long): Mono<Void> {
         return repository.delete(id)
-            .filter { i -> i == 0 }
+            .filter { i -> i == 0L }
             .flatMap { Mono.error<Any> { NotFoundException("No restaurant found for ID $id") } }
             .then()
     }
