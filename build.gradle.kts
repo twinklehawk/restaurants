@@ -28,7 +28,7 @@ configure(subprojects.filter { it.name != "platform" && it.name != "db" } ) {
     tasks.withType<io.gitlab.arturbosch.detekt.Detekt> {
         allRules = true
         buildUponDefaultConfig = true
-        jvmTarget = "1.8"
+        jvmTarget = "17"
     }
 }
 
