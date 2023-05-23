@@ -32,7 +32,7 @@ class TakeoutContainersController(private val repository: TakeoutContainersRepos
     @DeleteMapping("/{id}")
     override fun delete(@PathVariable("id") id: Long): Mono<Void> {
         return repository.delete(id)
-            .filter { i -> i == 0 }
+            .filter { it == 0L }
             .flatMap { Mono.error<Any> { NotFoundException("No takeout container found for ID $id") } }
             .then()
     }

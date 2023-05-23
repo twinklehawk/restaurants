@@ -1,6 +1,5 @@
 package net.plshark.restaurant.repository
 
-import io.r2dbc.spi.Row
 import net.plshark.restaurant.TakeoutContainer
 import org.springframework.r2dbc.core.DatabaseClient
 import org.springframework.stereotype.Repository
@@ -25,7 +24,7 @@ class RestaurantContainersRepository(private val client: DatabaseClient) {
         return client.sql(sql)
             .bind("restaurantId", restaurantId)
             .bind("takeoutContainerId", containerId)
-            .map { row: Row -> row.get("id", java.lang.Long::class.java)!!.toLong() }
+            .map { row -> row.get("id", java.lang.Long::class.java)!!.toLong() }
             .one()
             .switchIfEmpty(Mono.error { IllegalStateException("No ID returned from insert") })
     }
@@ -40,7 +39,7 @@ class RestaurantContainersRepository(private val client: DatabaseClient) {
             "rc.restaurant_id = :restaurantId AND c.id = rc.takeout_container_ID ORDER BY c.id"
         return client.sql(sql)
             .bind("restaurantId", restaurantId)
-            .map { row: Row -> TakeoutContainersRepository.mapRow(row) }
+            .map { row -> TakeoutContainersRepository.mapRow(row) }
             .all()
     }
 
@@ -49,7 +48,7 @@ class RestaurantContainersRepository(private val client: DatabaseClient) {
      * @param id the association ID
      * @return a [Mono] containing the number of rows deleted
      */
-    fun delete(id: Long): Mono<Int> {
+    fun delete(id: Long): Mono<Long> {
         return client.sql("DELETE FROM takeout_containers WHERE id = :id")
             .bind("id", id)
             .fetch().rowsUpdated()
@@ -59,7 +58,7 @@ class RestaurantContainersRepository(private val client: DatabaseClient) {
      * Delete all restaurant-container associations
      * @return a [Mono] containing the number of rows deleted
      */
-    fun deleteAll(): Mono<Int> {
+    fun deleteAll(): Mono<Long> {
         return client.sql("DELETE FROM takeout_containers")
             .fetch().rowsUpdated()
     }

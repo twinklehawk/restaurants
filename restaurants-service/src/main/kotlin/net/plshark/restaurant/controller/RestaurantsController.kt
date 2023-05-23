@@ -58,7 +58,7 @@ class RestaurantsController(
     override fun update(@PathVariable("id") id: Long, @RequestBody update: Restaurant): Mono<Restaurant> {
         val restaurant = update.copy(id = id)
         return repository.update(restaurant)
-            .filter { i -> i == 0 }
+            .filter { i -> i == 0L }
             .flatMap { Mono.error<Any> { NotFoundException("No restaurant found for ID $id") } }
             .thenMany(restaurantContainersRepository.getContainersForRestaurant(restaurant.id))
             .collectList()
@@ -78,7 +78,7 @@ class RestaurantsController(
     @DeleteMapping("/{id}")
     override fun delete(@PathVariable("id") id: Long): Mono<Void> {
         return repository.delete(id)
-            .filter { i -> i == 0 }
+            .filter { i -> i == 0L }
             .flatMap { Mono.error<Any> { NotFoundException("No restaurant found for ID $id") } }
             .then()
     }

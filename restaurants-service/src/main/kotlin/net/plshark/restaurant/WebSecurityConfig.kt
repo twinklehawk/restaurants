@@ -20,14 +20,14 @@ class WebSecurityConfig {
     ): SecurityWebFilterChain {
         // TODO set up security
         return http
-            .authorizeExchange()
-            .anyExchange()
-            .hasRole("takeout-user")
-            .and()
+            .authorizeExchange {
+                it.anyExchange()
+                    .hasRole("takeout-user")
+            }
             //.authenticationManager(authenticationManager)
             .securityContextRepository(NoOpServerSecurityContextRepository.getInstance())
-            .csrf().disable()
-            .logout().disable()
+            .csrf { it.disable() }
+            .logout { it.disable() }
             //.httpBasic()
             .build()
     }

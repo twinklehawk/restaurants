@@ -64,7 +64,7 @@ class RestaurantsControllerTest {
             null,
             listOf(TakeoutContainer(5, "styrofoam"), TakeoutContainer(4, "paper"))
         )
-        every { repo.update(request) } returns 1.toMono()
+        every { repo.update(request) } returns 1L.toMono()
         every { restaurantContainersRepository.getContainersForRestaurant(1) }.returnsMany(
             Flux.just(TakeoutContainer(3, "plastic"), TakeoutContainer(4, "paper")),
             Flux.just(TakeoutContainer(5, "styrofoam"), TakeoutContainer(4, "paper"))
@@ -79,7 +79,7 @@ class RestaurantsControllerTest {
     fun `update should use the ID in the path and ignore the ID in the request body`() {
         val request = Restaurant(1, "arbys", "fast food", null, emptyList())
         val expected = Restaurant(5, "arbys", "fast food", null, emptyList())
-        every { repo.update(expected) } returns 1.toMono()
+        every { repo.update(expected) } returns 1L.toMono()
         every { restaurantContainersRepository.getContainersForRestaurant(5) } returns Flux.empty()
 
         controller.update(5, request).test().expectNext(expected).verifyComplete()
@@ -88,7 +88,7 @@ class RestaurantsControllerTest {
     @Test
     fun `update should return a NotFoundException if no record is updated`() {
         val request = Restaurant(1, "arbys", "burgers", null, emptyList())
-        every { repo.update(any()) } returns 0.toMono()
+        every { repo.update(any()) } returns 0L.toMono()
         every { restaurantContainersRepository.getContainersForRestaurant(any()) } returns Flux.empty()
 
         controller.update(1, request).test().verifyError(NotFoundException::class)
@@ -96,14 +96,14 @@ class RestaurantsControllerTest {
 
     @Test
     fun `delete should send the ID to the repo`() {
-        every { repo.delete(8) } returns 1.toMono()
+        every { repo.delete(8) } returns 1L.toMono()
 
         controller.delete(8).test().verifyComplete()
     }
 
     @Test
     fun `delete should return a NotFoundException if no record is deleted`() {
-        every { repo.delete(8) } returns 0.toMono()
+        every { repo.delete(8) } returns 0L.toMono()
 
         controller.delete(8).test().verifyError(NotFoundException::class)
     }

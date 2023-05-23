@@ -1,10 +1,11 @@
 package net.plshark.restaurant.repository
 
-import io.r2dbc.spi.Row
+import io.r2dbc.spi.Parameters
+import io.r2dbc.spi.R2dbcType
+import io.r2dbc.spi.Readable
 import net.plshark.restaurant.Restaurant
 import net.plshark.restaurant.RestaurantCreate
 import org.springframework.r2dbc.core.DatabaseClient
-import org.springframework.r2dbc.core.Parameter
 import org.springframework.stereotype.Repository
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
@@ -25,8 +26,8 @@ class RestaurantsRepository(private val client: DatabaseClient) {
         return client.sql(sql)
             .bind(NAME, restaurant.name)
             .bind(TYPE, restaurant.type)
-            .bind(ADDRESS, Parameter.fromOrEmpty(restaurant.address, String::class.java))
-            .map { row: Row -> row.get(ID, java.lang.Long::class.java)!!.toLong() }
+            .bind(ADDRESS, Parameters.`in`(R2dbcType.VARCHAR, restaurant.address))
+            .map { row -> row.get(ID, java.lang.Long::class.java)!!.toLong() }
             .one()
             .switchIfEmpty(Mono.error { IllegalStateException("No ID returned from insert") })
             .map { restaurant.toRestaurant(it) }
@@ -68,12 +69,12 @@ class RestaurantsRepository(private val client: DatabaseClient) {
      * @param restaurant the restaurant to update with the new data to set
      * @return the number of rows updated, never empty
      */
-    fun update(restaurant: Restaurant): Mono<Int> {
+    fun update(restaurant: Restaurant): Mono<Long> {
         val sql = "UPDATE restaurants SET name = :name, type = :type, address = :address WHERE id = :id"
         return client.sql(sql)
             .bind("name", restaurant.name)
             .bind("type", restaurant.type)
-            .bind("address", Parameter.fromOrEmpty(restaurant.address, String::class.java))
+            .bind("address", Parameters.`in`(R2dbcType.VARCHAR, restaurant.address))
             .bind("id", restaurant.id)
             .fetch().rowsUpdated()
             .flatMap { i ->
@@ -87,7 +88,7 @@ class RestaurantsRepository(private val client: DatabaseClient) {
      * @param id the ID to delete
      * @return the number of rows deleted, never empty
      */
-    fun delete(id: Long): Mono<Int> {
+    fun delete(id: Long): Mono<Long> {
         return client.sql("DELETE FROM restaurants WHERE id = :id")
             .bind("id", id)
             .fetch().rowsUpdated()
@@ -96,12 +97,12 @@ class RestaurantsRepository(private val client: DatabaseClient) {
     /**
      * Delete all restaurants
      */
-    fun deleteAll(): Mono<Int> {
+    fun deleteAll(): Mono<Long> {
         return client.sql("DELETE FROM restaurants")
             .fetch().rowsUpdated()
     }
 
-    private fun mapRow(r: Row): Restaurant {
+    private fun mapRow(r: Readable): Restaurant {
         return Restaurant(
             r.get(ID, java.lang.Long::class.java)!!.toLong(),
             r.get(NAME, String::class.java)!!,
