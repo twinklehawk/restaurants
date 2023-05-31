@@ -26,7 +26,7 @@ class ExceptionHandlerAdvice {
             status = status.value(),
             statusDetail = status.reasonPhrase,
             message = e.message,
-            path = request.uri.toString()
+            path = request.uri.toString(),
         )
     }
 }

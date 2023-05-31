@@ -16,7 +16,7 @@ class WebSecurityConfig {
      */
     @Bean
     fun securityFilterChain(
-        http: ServerHttpSecurity
+        http: ServerHttpSecurity,
     ): SecurityWebFilterChain {
         // TODO set up security
         return http
@@ -24,11 +24,11 @@ class WebSecurityConfig {
                 it.anyExchange()
                     .hasRole("takeout-user")
             }
-            //.authenticationManager(authenticationManager)
+            // .authenticationManager(authenticationManager)
             .securityContextRepository(NoOpServerSecurityContextRepository.getInstance())
             .csrf { it.disable() }
             .logout { it.disable() }
-            //.httpBasic()
+            // .httpBasic()
             .build()
     }
 }

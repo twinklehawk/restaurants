@@ -24,7 +24,7 @@ import reactor.kotlin.core.publisher.toFlux
 @RequestMapping("/restaurants")
 class RestaurantsController(
     private val repository: RestaurantsRepository,
-    private val restaurantContainersRepository: RestaurantContainersRepository
+    private val restaurantContainersRepository: RestaurantContainersRepository,
 ) : RestaurantsService {
 
     @PostMapping
@@ -49,7 +49,7 @@ class RestaurantsController(
     @GetMapping
     fun findAll(
         @RequestParam(name = "limit", defaultValue = "50") limit: Int,
-        @RequestParam(name = "page", defaultValue = "0") page: Int
+        @RequestParam(name = "page", defaultValue = "0") page: Int,
     ): Flux<Restaurant> {
         return repository.findAll(limit, page)
     }

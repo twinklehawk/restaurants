@@ -69,7 +69,7 @@ class TakeoutContainersRepository(private val client: DatabaseClient) {
         fun mapRow(r: Readable): TakeoutContainer {
             return TakeoutContainer(
                 r.get(ID, java.lang.Long::class.java)!!.toLong(),
-                r.get(NAME, String::class.java)!!
+                r.get(NAME, String::class.java)!!,
             )
         }
     }

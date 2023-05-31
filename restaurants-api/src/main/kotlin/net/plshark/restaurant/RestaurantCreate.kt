@@ -4,7 +4,7 @@ data class RestaurantCreate(
     val name: String,
     val type: String,
     val address: String?,
-    val containerIds: List<Long>
+    val containerIds: List<Long>,
 ) {
     /**
      * Build a [Restaurant] from this object with an empty containers list
@@ -17,6 +17,6 @@ data class RestaurantCreate(
             name = name,
             type = type,
             address = address,
-            containers = emptyList()
+            containers = emptyList(),
         )
 }

@@ -9,6 +9,6 @@ data class TakeoutContainerCreate(val name: String) {
     fun toTakeoutContainer(id: Long) =
         TakeoutContainer(
             id = id,
-            name = name
+            name = name,
         )
 }
