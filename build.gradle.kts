@@ -3,6 +3,7 @@ plugins {
     kotlin("plugin.spring") version "1.8.21" apply false
     id("org.springframework.boot") version "3.1.0" apply false
     id("io.gitlab.arturbosch.detekt") version "1.23.0" apply false
+    id("org.jmailen.kotlinter") version "3.15.0" apply false
 }
 
 allprojects {
@@ -16,6 +17,7 @@ allprojects {
 configure(subprojects.filter { it.name != "platform" && it.name != "db" } ) {
     apply(plugin = "jacoco")
     apply(plugin = "io.gitlab.arturbosch.detekt")
+    apply(plugin = "org.jmailen.kotlinter")
 
     tasks.withType<JacocoReport> {
         reports {
@@ -26,7 +28,6 @@ configure(subprojects.filter { it.name != "platform" && it.name != "db" } ) {
     }
 
     tasks.withType<io.gitlab.arturbosch.detekt.Detekt> {
-        allRules = true
         buildUponDefaultConfig = true
         jvmTarget = "17"
     }

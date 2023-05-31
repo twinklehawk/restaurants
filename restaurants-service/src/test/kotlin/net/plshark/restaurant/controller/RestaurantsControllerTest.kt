@@ -62,12 +62,12 @@ class RestaurantsControllerTest {
             "arbys",
             "burgers",
             null,
-            listOf(TakeoutContainer(5, "styrofoam"), TakeoutContainer(4, "paper"))
+            listOf(TakeoutContainer(5, "styrofoam"), TakeoutContainer(4, "paper")),
         )
         every { repo.update(request) } returns 1L.toMono()
         every { restaurantContainersRepository.getContainersForRestaurant(1) }.returnsMany(
             Flux.just(TakeoutContainer(3, "plastic"), TakeoutContainer(4, "paper")),
-            Flux.just(TakeoutContainer(5, "styrofoam"), TakeoutContainer(4, "paper"))
+            Flux.just(TakeoutContainer(5, "styrofoam"), TakeoutContainer(4, "paper")),
         )
         every { restaurantContainersRepository.delete(3) } returns Mono.just(1)
         every { restaurantContainersRepository.insert(1, 5) } returns Mono.just(1)

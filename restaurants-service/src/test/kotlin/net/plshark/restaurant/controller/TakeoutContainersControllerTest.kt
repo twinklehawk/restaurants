@@ -32,7 +32,7 @@ class TakeoutContainersControllerTest {
     fun `findAll should return all results from the repo`() {
         every { repo.findAll() } returns Flux.just(
             TakeoutContainer(1, "paper"),
-            TakeoutContainer(2, "plastic")
+            TakeoutContainer(2, "plastic"),
         )
 
         controller.findAll().test()

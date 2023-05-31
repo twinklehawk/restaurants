@@ -17,5 +17,5 @@ data class ErrorResponse(
     /** the error detail message  */
     val message: String?,
     /** the path of the request that caused the error  */
-    val path: String
+    val path: String,
 )

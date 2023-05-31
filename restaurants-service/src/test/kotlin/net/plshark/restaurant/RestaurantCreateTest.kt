@@ -10,7 +10,7 @@ class RestaurantCreateTest {
         val create = RestaurantCreate("test", "type", "addr", listOf(321))
         assertEquals(
             Restaurant(123, "test", "type", "addr", emptyList()),
-            create.toRestaurant(123)
+            create.toRestaurant(123),
         )
     }
 }

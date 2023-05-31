@@ -20,8 +20,8 @@ class DbExtension : BeforeEachCallback, AfterEachCallback, ParameterResolver {
             mutableMapOf(
                 "username" to "test_user",
                 "password" to "test_user_pass",
-                "schema" to "users"
-            )
+                "schema" to "users",
+            ),
         )
         .cleanDisabled(false)
         .load()
@@ -39,7 +39,7 @@ class DbExtension : BeforeEachCallback, AfterEachCallback, ParameterResolver {
 
     override fun resolveParameter(
         parameterContext: ParameterContext,
-        extensionContext: ExtensionContext
+        extensionContext: ExtensionContext,
     ): DatabaseClient {
         val connectionFactory = ConnectionFactories.get(DB_URL)
         return DatabaseClient.create(connectionFactory)

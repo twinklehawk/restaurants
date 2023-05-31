@@ -78,8 +78,9 @@ class RestaurantsRepository(private val client: DatabaseClient) {
             .bind("id", restaurant.id)
             .fetch().rowsUpdated()
             .flatMap { i ->
-                if (i > 1) Mono.error { IllegalStateException("Unexpected number of restaurant rows updated: $i") }
-                else Mono.just(i)
+                if (i > 1) {
+                    Mono.error { IllegalStateException("Unexpected number of restaurant rows updated: $i") }
+                } else Mono.just(i)
             }
     }
 
@@ -108,7 +109,7 @@ class RestaurantsRepository(private val client: DatabaseClient) {
             r.get(NAME, String::class.java)!!,
             r.get(TYPE, String::class.java)!!,
             r.get(ADDRESS, String::class.java),
-            emptyList()
+            emptyList(),
         )
     }
 
