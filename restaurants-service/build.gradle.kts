@@ -1,8 +1,6 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
 plugins {
+    id("kotlin-config")
     id("org.springframework.boot")
-    kotlin("jvm")
     kotlin("plugin.spring")
 }
 
@@ -26,13 +24,6 @@ dependencies {
     testRuntimeOnly(project(":db"))
 }
 
-java { sourceCompatibility = JavaVersion.VERSION_17 }
-tasks.withType<KotlinCompile> {
-    kotlinOptions {
-        freeCompilerArgs = listOf("-Xjsr305=strict")
-        jvmTarget = "17"
-    }
-}
 tasks.withType<Test> {
     val runIntTests = System.getProperties().getProperty("runIntTests") == "true"
     useJUnitPlatform {

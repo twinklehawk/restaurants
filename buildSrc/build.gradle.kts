@@ -1,0 +1,24 @@
+import java.util.Properties
+import kotlin.io.path.inputStream
+
+plugins {
+    `kotlin-dsl`
+}
+
+repositories {
+    gradlePluginPortal()
+    mavenCentral()
+}
+
+val props = Properties()
+rootDir.toPath().resolveSibling("gradle.properties").inputStream().use {
+    props.load(it)
+}
+
+dependencies {
+    val kotlinVersion: String = props["kotlinVersion"] as String
+
+    implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
+    implementation("io.gitlab.arturbosch.detekt:detekt-gradle-plugin:1.23.0")
+    implementation("org.jmailen.gradle:kotlinter-gradle:3.15.0")
+}
