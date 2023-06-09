@@ -1,11 +1,11 @@
 plugins {
     id("kotlin-config")
+    id("dependency-config")
     id("org.springframework.boot")
     kotlin("plugin.spring")
 }
 
 dependencies {
-    implementation(enforcedPlatform(project(":platform")))
     implementation(project(":restaurants-api"))
     implementation("org.springframework.boot:spring-boot-starter-webflux")
     implementation("org.springframework.boot:spring-boot-starter-security")

@@ -1,9 +1,9 @@
 plugins {
     id("kotlin-config")
+    id("dependency-config")
 }
 
 dependencies {
-    implementation(enforcedPlatform(project(":platform")))
     api("io.projectreactor:reactor-core")
     implementation(kotlin("reflect"))
     implementation(kotlin("stdlib-jdk8"))
