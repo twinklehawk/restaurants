@@ -6,15 +6,16 @@ plugins {
 }
 
 dependencies {
-    implementation(project(":restaurants-api"))
     implementation("org.springframework.boot:spring-boot-starter-webflux")
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-data-r2dbc")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+    implementation("io.projectreactor:reactor-core")
     implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
     implementation(kotlin("reflect"))
     implementation(kotlin("stdlib-jdk8"))
     runtimeOnly("org.postgresql:r2dbc-postgresql")
+
     testImplementation("org.junit.jupiter:junit-jupiter-api")
     testImplementation("org.flywaydb:flyway-core")
     testImplementation("io.mockk:mockk")
