@@ -12,6 +12,5 @@ pluginManagement {
 
 include(
     "db",
-    "restaurants-api",
     "restaurants-service",
 )
