@@ -3,10 +3,6 @@ plugins {
 }
 
 allprojects {
-    repositories {
-        mavenCentral()
-    }
-
     group = "net.plshark.restaurants"
     version = "0.0.2"
 }
