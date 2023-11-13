@@ -20,6 +20,6 @@ dependencies {
 
     implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
     implementation("io.gitlab.arturbosch.detekt:detekt-gradle-plugin:1.23.0")
-    implementation("org.jmailen.gradle:kotlinter-gradle:3.16.0")
+    implementation("org.jmailen.gradle:kotlinter-gradle:4.0.1")
     implementation("io.spring.gradle:dependency-management-plugin:1.1.3")
 }
